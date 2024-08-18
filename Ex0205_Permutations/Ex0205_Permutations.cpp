@@ -11,7 +11,7 @@ void RecurPermutations(char* arr, int left, int right)
 	if (left == right)
 	{
 		for (int i = 0; i <= right; i++)
-			cout << arr[i] << " ";
+			cout << arr[i] << " " << std::flush;
 		cout << endl;
 	}
 	else
@@ -22,6 +22,13 @@ void RecurPermutations(char* arr, int left, int right)
 		// - right는 고정
 
 		// TODO:
+		for (int i = left; i <= right; ++i) {
+			std::swap(arr[left], arr[i]);
+			// std::cout << arr[left] << " ";
+
+			RecurPermutations(arr, left + 1, right);
+			std::swap(arr[left], arr[i]);
+		}
 	}
 }
 
@@ -49,7 +56,7 @@ int main()
 	*/
 
 	// Permutations
-	char arr[] = "abcd";
+	char arr[] = "abcdefg";
 
 	RecurPermutations(arr, 0, 0);
 	cout << endl;
@@ -57,7 +64,7 @@ int main()
 	RecurPermutations(arr, 0, 1);
 	cout << endl;
 
-	RecurPermutations(arr, 0, 2);
+	RecurPermutations(arr, 0, 3);
 	cout << endl;
 
 	// RecurPermutations(arr, 0, 3);
