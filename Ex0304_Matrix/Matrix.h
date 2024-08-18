@@ -15,7 +15,9 @@ public:
 
 	Matrix Add(const Matrix& b);
 
-	Matrix Transpose();
+	Matrix Multiply(const Matrix& mul);
+
+	Matrix Transpose() const;
 
 	void Print();
 
@@ -24,3 +26,11 @@ private:
 	int num_rows_ = 0;
 	int num_cols_ = 0;
 };
+
+struct Vector
+{
+	float* components = nullptr;
+	int dimension = 0;
+};
+
+float getDotProduct(const Vector& a, const Vector& b);

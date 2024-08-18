@@ -14,6 +14,8 @@ public:
 		// 아무것도 하지 않음 (동적할당 메모리 없이 시작)
 	}
 
+	SparsePolynomial(const SparsePolynomial& poly);
+
 	~SparsePolynomial()
 	{
 		if (terms_) delete[] terms_;

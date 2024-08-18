@@ -6,8 +6,16 @@
 
 using namespace std;
 
-// 새로운 항을 추가할 때 자기 위치를 찾아서 넣어줘야 함
+SparsePolynomial::SparsePolynomial(const SparsePolynomial& poly)
+{
+	terms_ = new Term[poly.capacity_];
+	::memcpy(terms_, poly.terms_, poly.capacity_);
 
+	capacity_ = poly.capacity_;
+	num_terms_ = poly.num_terms_;
+}
+
+// 새로운 항을 추가할 때 자기 위치를 찾아서 넣어줘야 함
 // exp항이 이미 존재하면 거기에 coef를 더해준다.
 // 존재하지 않는다면 exp 오름 차순으로 정렬된 상태로 새로 추가한다.
 void SparsePolynomial::NewTerm(float coef, int exp)
@@ -31,7 +39,47 @@ void SparsePolynomial::NewTerm(float coef, int exp)
 	terms_[num_terms_].coef = coef;
 	terms_[num_terms_].exp = exp;
 
-	num_terms_++;
+	int insertionIdx = num_terms_;
+
+	// 새로운 항을 삽입할 index를 탐색
+	while ((insertionIdx > 0) && (terms_[insertionIdx - 1].exp > terms_[num_terms_].exp))
+	{
+		--insertionIdx;
+	}
+
+	// num_terms_가 삽입할 인덱스인 경우
+	if (insertionIdx == num_terms_)
+	{
+		++num_terms_;
+
+		return;
+	}
+
+	// 차수가 같은 항이 있는 경우
+	if (terms_[insertionIdx].exp == terms_[num_terms_].exp)
+	{
+		terms_[insertionIdx].coef += terms_[num_terms_].coef;
+
+		return;
+	}
+	// 차수가 같은 항이 없는 경우
+	else
+	{
+		// 삽입할 항 임시 저장
+		Term insertionTerm = terms_[num_terms_];
+		
+		// 삽입 index 뒤의 모든 항을 뒤로 이동
+		for (int shiftIdx = num_terms_; insertionIdx < shiftIdx; --shiftIdx)
+		{
+			terms_[shiftIdx] = terms_[shiftIdx - 1];
+		}
+
+		// 새로운 항 삽입
+		terms_[insertionIdx] = insertionTerm;
+		++num_terms_;
+
+		return;
+	}
 }
 
 float SparsePolynomial::Eval(float x)
@@ -39,6 +87,10 @@ float SparsePolynomial::Eval(float x)
 	float temp = 0.0f;
 
 	// TODO:
+	for (int termIdx = 0; termIdx < num_terms_; ++termIdx)
+	{
+		temp += terms_[termIdx].coef * std::powf(x, terms_[termIdx].exp);
+	}
 
 	return temp;
 }
@@ -57,6 +109,39 @@ SparsePolynomial SparsePolynomial::Add(const SparsePolynomial& poly)
 	SparsePolynomial temp;
 
 	// TODO:
+	int thisTermIdx = 0;
+	int paramTermIdx = 0;
+
+	while (thisTermIdx < num_terms_ && paramTermIdx < poly.num_terms_)
+	{
+		if (terms_[thisTermIdx].exp < poly.terms_[paramTermIdx].exp)
+		{
+			temp.NewTerm(terms_[thisTermIdx].coef, terms_[thisTermIdx].exp);
+			++thisTermIdx;
+		}
+		else if (terms_[thisTermIdx].exp > poly.terms_[paramTermIdx].exp)
+		{
+			temp.NewTerm(poly.terms_[paramTermIdx].coef, poly.terms_[paramTermIdx].exp);
+			++paramTermIdx;
+		}
+		else
+		{
+			float sumCoef{ terms_[thisTermIdx].coef + poly.terms_[paramTermIdx].coef };
+			temp.NewTerm(sumCoef, terms_[thisTermIdx].exp);
+			++thisTermIdx;
+			++paramTermIdx;
+		}
+	}
+
+	for (int termIdx = thisTermIdx; termIdx < num_terms_; ++termIdx)
+	{
+		temp.NewTerm(terms_[termIdx].coef, terms_[termIdx].exp);
+	}
+
+	for (int termIdx = paramTermIdx; termIdx < poly.num_terms_; ++termIdx)
+	{
+		temp.NewTerm(poly.terms_[termIdx].coef, poly.terms_[termIdx].exp);
+	}
 
 	return temp;
 }

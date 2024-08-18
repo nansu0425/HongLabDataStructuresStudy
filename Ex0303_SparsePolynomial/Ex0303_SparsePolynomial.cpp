@@ -31,19 +31,24 @@ int main()
 		SparsePolynomial p1; // max_degree는 기본값으로 설정
 
 		// exp가 작은 항부터 추가한다고 가정
+		
+		
+		p1.NewTerm(2.0f, 2);
 		p1.NewTerm(1.0f, 0);
 		p1.NewTerm(1.5f, 1);
-		p1.NewTerm(2.0f, 2);
 
 		p1.Print(); // 1 + 1.5*x^1 + 2*x^2
 
 		SparsePolynomial p2;
 
 		// exp가 작은 항부터 추가한다고 가정
-		p2.NewTerm(1.0f, 1);
-		p2.NewTerm(3.0f, 2);
-		p2.NewTerm(5.0f, 7);
+		
+		
+		
 		p2.NewTerm(2.0f, 11);
+		p2.NewTerm(5.0f, 7);
+		p2.NewTerm(3.0f, 2);
+		p2.NewTerm(1.0f, 1);
 
 		p2.Print(); // 1*x^1 + 3*x^2 + 5*x^7 + 2*x^11
 

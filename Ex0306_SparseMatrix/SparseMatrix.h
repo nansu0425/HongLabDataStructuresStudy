@@ -16,11 +16,18 @@ public:
 
 	~SparseMatrix();
 
+	void IncreaseCapacity();
+
+	int GetTermOrderKey(const MatrixTerm& term) const;
+	int GetTermOrderKey(int row, int col);
+
 	void SetValue(int row, int col, float value); // NewTerm()
 
 	float GetValue(int row, int col) const;
 
 	SparseMatrix Transpose();
+	
+	SparseMatrix Add(const SparseMatrix& param) const;
 
 	void PrintTerms();
 	void Print();;
