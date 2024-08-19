@@ -27,8 +27,8 @@ int main()
 {
 	// 예제에서는 빈칸 없이 한 자리 숫자만 가능
 
-	//const char infix[] = "8/2+(3+4)*5-1*2";
-	const char infix[] = "1+(1*2+3)*4";
+	const char infix[] = "8/2+(3+4)*5-1*2";
+	// const char infix[] = "1+(1*2+3)*4";
 	//const char infix[] = "1+2*3+3";
 	//const char infix[] = "1+2*(3+1)";
 	const int size = sizeof(infix) / sizeof(char) - 1;
@@ -78,22 +78,53 @@ void InfixToPostfix(Queue<char>& q, Queue<char>& output)
 
 		cout << c << endl;
 
-		/*
+		
 		if (c >= '0' && c <= '9') // 숫자(피연산자)라면 output에 추가
-			...;
+		{
+			output.Enqueue(c);
+		}
 		else if (c == '(') // 여는 괄호라면 스택에 추가
-			...;
+		{
+			s.Push(c);
+		}
 		else if (c == ')') // 닫는 괄호를 만나면
 		{
 			// 여는 괄호 전까지를 스택에서 꺼내서 출력에 넣기
 			// 여는 괄호 제거
+			while (true)
+			{
+				char top = s.Top();
+				s.Pop();
+
+				if (top == '(')
+				{
+					break;
+				}
+
+				output.Enqueue(top);
+			}
 		}
 		else // 연산자를 만나면
 		{
 			// 스택에서 c보다 우선순위가 높거나 같은 것들을 꺼내서 추가
 			// c는 스택에 추가
+
+			while (!s.IsEmpty())
+			{
+				char top = s.Top();
+
+				if (Prec(top) < Prec(c))
+				{
+					break;
+				}
+
+				s.Pop();
+				output.Enqueue(top);
+			}
+
+			s.Push(c);
 		}
-		*/
+		
 
 		cout << "Stack: ";
 		s.Print();
@@ -121,11 +152,12 @@ int EvalPostfix(Queue<char>& q)
 
 		cout << c << endl;
 
-		/*
+		
 		if (c != '+' && c != '-' && c != '*' && c != '/')
 		{
 			// 입력이 연산자가 아니면 일단 저장
 			// 문자를 숫자로 변환 c - '0' 예: int('9' - '0') -> 정수 9
+			s.Push(static_cast<int>(c - '0'));
 		}
 		else
 		{
@@ -133,18 +165,24 @@ int EvalPostfix(Queue<char>& q)
 
 			// 입력이 연산자이면 스택에서 꺼내서 연산에 사용
 
-			if (c == '+') {
-				...
+			int oldTop = s.Top();
+			s.Pop();
+
+			if (c == '+') 
+			{
+				s.Top() += oldTop;
 			}
-			else if (c == '-') {
-				...
+			else if (c == '-') 
+			{
+				s.Top() -= oldTop;
 			}
-			else if (c == '*') {
-				...
+			else if (c == '*') 
+			{
+				s.Top() *= oldTop;
 			}
 			else if (c == '/')
 			{
-				...
+				s.Top() /= oldTop;
 			}
 			else
 			{
@@ -152,8 +190,7 @@ int EvalPostfix(Queue<char>& q)
 				exit(-1); // 강제 종료
 			}
 		}
-		*/
-
+		
 		cout << "Stack: ";
 		s.Print();
 	}
