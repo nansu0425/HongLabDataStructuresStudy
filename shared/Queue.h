@@ -60,12 +60,10 @@ public:
 		//	return 0;
 
 		// 또는 if-else 하나로도 구현 가능합니다.
-		// if (...)
-		//	  return ...;
-		// else
-		//    return ...;
-
-		return 0; // TODO: 임시
+		if (front_ <= rear_)
+			return rear_ - front_;
+		else
+			return (rear_ + 1) + (capacity_ - 1 - front_);
 	}
 
 	void Resize() // 2배씩 증가
@@ -79,6 +77,25 @@ public:
 
 		// TODO: 하나하나 복사하는 방식은 쉽게 구현할 수 있습니다. 
 		//       (도전) 경우를 나눠서 memcpy()로 블럭 단위로 복사하면 더 효율적입니다.
+
+		int newCapacity = capacity_ * 2;
+		T* newQueue = new T[newCapacity];
+		::memset(newQueue, 0x00, sizeof(T) * newCapacity);
+
+		if (front_ <= rear_)
+		{
+			::memcpy(&newQueue[front_ + 1], &queue_[front_ + 1], sizeof(T) * Size());
+		}
+		else
+		{
+			::memcpy(&newQueue[front_ + 1], &queue_[front_ + 1], sizeof(T) * (capacity_ - 1 - front_));
+			::memcpy(&newQueue[capacity_], queue_, sizeof(T) * (rear_ + 1));
+			rear_ += capacity_;
+		}
+
+		delete[] queue_;
+		queue_ = newQueue;
+		capacity_ = newCapacity;
 	}
 
 	void Enqueue(const T& item) // 맨 뒤에 추가, Push()
@@ -87,13 +104,16 @@ public:
 			Resize();
 
 		// TODO:
+		rear_ = (rear_ + 1) % capacity_;
+		queue_[rear_] = item;
 	}
 
 	void Dequeue() // 큐의 첫 요소 삭제, Pop()
 	{
 		assert(!IsEmpty());
 
-		// TODO: 
+		// TODO:
+		front_ = (front_ + 1) % capacity_;
 	}
 
 	void Print()

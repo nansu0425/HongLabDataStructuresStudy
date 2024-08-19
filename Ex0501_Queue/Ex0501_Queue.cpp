@@ -39,5 +39,11 @@ int main()
 		q.Print();
 	}
 
+	while (!q.IsEmpty())
+	{
+		q.Dequeue();
+		q.Print();
+	}
+
 	return 0;
 }
