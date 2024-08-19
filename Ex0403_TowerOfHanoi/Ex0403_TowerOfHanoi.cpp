@@ -20,21 +20,28 @@ void PrintTowers()
 // 실제로 디스크를 움직여서 스택들을 업데이트
 void MoveDisk(int from, int to)
 {
-	if (tower[from].IsEmpty())
-	{
-		cout << "Tower " << from << " is empty." << endl;
-		exit(0); // 오류 강제 종료
-	}
+	assert(!tower[from].IsEmpty());
+
+	//if (tower[from].IsEmpty())
+	//{
+	//	cout << "Tower " << from << " is empty." << endl;
+	//	exit(0); // 오류 강제 종료
+	//}
 
 	auto disk = tower[from].Top();
 
 	// 받을 타워가 비어 있으면 뭐든지 받을 수 있음
 	// 알파벳 순서여야 받을 수 있음 (역순 X)
-	if (!tower[to].IsEmpty() && tower[to].Top() > disk)
+	if (!tower[to].IsEmpty())
 	{
-		cout << "Cannot place " << disk << " on " << tower[to].Top() << endl;
-		exit(0); // 오류 강제 종료
+		assert(tower[to].Top() < disk);
 	}
+
+	//if (!tower[to].IsEmpty() && tower[to].Top() > disk)
+	//{
+	//	cout << "Cannot place " << disk << " on " << tower[to].Top() << endl;
+	//	exit(0); // 오류 강제 종료
+	//}
 
 	tower[from].Pop();
 	tower[to].Push(disk);
@@ -46,6 +53,19 @@ void MoveDisk(int from, int to)
 void RecurMoveDisks(int n, int from, int temp, int to)
 {
 	// TODO:
+	if (n == 0)
+	{
+		return;
+	}
+
+	// from에 있는 n-1개의 disk를 temp로 옮긴다
+	RecurMoveDisks(n - 1, from, to, temp);
+
+	// from의 하나 남은 disk를 to로 옮긴다
+	MoveDisk(from, to);
+
+	// temp에 있는 n-1개의 disk를 to로 옮긴다
+	RecurMoveDisks(n - 1, temp, from, to);
 }
 
 int main()
