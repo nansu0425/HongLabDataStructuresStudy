@@ -10,8 +10,7 @@
 template<typename T>
 class Deque : public Queue<T>
 {
-
-	typedef Queue<T> Base;
+	using Base = Queue<T>;
 
 public:
 	Deque(int capacity)
@@ -35,6 +34,8 @@ public:
 			Base::Resize();
 
 		// TODO:
+		Base::queue_[Base::front_] = item;
+		Base::front_ = (Base::front_ - 1 + Base::capacity_) % Base::capacity_;
 	}
 
 	void PushBack(const T& item)
@@ -52,6 +53,7 @@ public:
 		assert(!Base::IsEmpty());
 
 		// TODO:
+		Base::rear_ = (Base::rear_ - 1 + Base::capacity_) % Base::capacity_;
 	}
 
 private:
