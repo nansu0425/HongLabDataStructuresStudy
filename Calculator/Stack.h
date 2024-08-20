@@ -7,7 +7,7 @@ template<typename T>
 class Stack
 {
 public:
-	Stack(int size) : m_size(size)
+	Stack(int size = 4) : m_size(size)
 	{
 		m_items = new T[size];
 		::memset(m_items, 0x00, sizeof(T) * size);

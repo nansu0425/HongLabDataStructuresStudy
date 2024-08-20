@@ -7,7 +7,7 @@ template <typename T>
 class Queue
 {
 public:
-	Queue(int size) : m_size(size)
+	Queue(int size = 4) : m_size(size)
 	{
 		assert(m_size > 0);
 
