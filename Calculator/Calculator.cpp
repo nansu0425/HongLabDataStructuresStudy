@@ -114,17 +114,6 @@ void Calculator::SetPostfixExpression()
 {
 	assert(m_isSetExpr);
 
-	// 중위 표기식 첫 번째 토큰이 -면 피연산자 계산이 가능하도록
-	// 후위 표기식 첫 번째 토큰에 0 추가
-	if (*m_infixExpr.Peek() == '-')
-	{
-		char* zeroStr = new char[2];
-		zeroStr[0] = '0';
-		zeroStr[1] = '\0';
-
-		m_postfixExpr.Enqueue(zeroStr);
-	}
-
 	while (!m_infixExpr.IsEmpty())
 	{
 		const char* token = m_infixExpr.Dequeue();

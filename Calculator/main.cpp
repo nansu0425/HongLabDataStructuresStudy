@@ -4,7 +4,7 @@
 int main()
 {
 	Calculator cal;
-	cal.SetExpression("- 5 +     (4 -    9.3 / 3)* 10");
+	cal.SetExpression(" 5 +     (4 -    9.3 / 3)* 10");
 	
 	cal.PrintInfixExpression();
 	std::cout << "= " << cal.EvaluateExpression() << std::endl;
