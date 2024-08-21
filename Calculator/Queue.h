@@ -2,6 +2,7 @@
 
 #include <cassert>
 #include <cstring>
+#include <iostream>
 
 template <typename T>
 class Queue
@@ -49,6 +50,19 @@ public:
 		m_front = GetNextIdx(m_front);
 
 		return item;
+	}
+
+	friend std::ostream& operator<<(std::ostream& os, const Queue<T>& q)
+	{
+		int itemIdx = q.GetNextIdx(q.m_front);
+
+		while (itemIdx != q.m_rear + 1)
+		{
+			std::cout << q.m_items[itemIdx] << " ";
+			itemIdx = q.GetNextIdx(itemIdx);
+		}
+
+		return os;
 	}
 
 private:
