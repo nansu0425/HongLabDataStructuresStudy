@@ -56,7 +56,7 @@ public:
 	{
 		int itemIdx = q.GetNextIdx(q.m_front);
 
-		while (itemIdx != q.m_rear + 1)
+		while (itemIdx != q.GetNextIdx(q.m_rear))
 		{
 			std::cout << q.m_items[itemIdx] << " ";
 			itemIdx = q.GetNextIdx(itemIdx);
