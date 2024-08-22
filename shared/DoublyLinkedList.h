@@ -22,6 +22,24 @@ public:
 	{
 	}
 
+	DoublyLinkedList(const DoublyLinkedList& list)
+	{
+		if (list.first_ == nullptr)
+		{
+			return;
+		}
+
+		Node* cur = new Node(*list.first_);
+		first_ = cur;
+
+		while (cur->right)
+		{
+			cur->right = new Node{ *(cur->right) };
+			cur->right->left = cur;
+			cur = cur->right;
+		}
+	}
+
 	~DoublyLinkedList()
 	{
 		Clear();
@@ -29,12 +47,25 @@ public:
 
 	void Clear() // 모두 지워야(delete) 합니다.
 	{
-		// TODO:
+		if (first_ == nullptr)
+		{
+			return;
+		}
+
+		Node* del = first_;
+
+		while (del->right)
+		{
+			del = del->right;
+			delete del->left;
+		}
+
+		delete del;
 	}
 
 	bool IsEmpty()
 	{
-		return true; // TODO:
+		return (first_ == nullptr); // TODO:
 	}
 
 	int Size()
@@ -42,6 +73,13 @@ public:
 		int size = 0;
 
 		// TODO:
+		Node* cur = first_;
+
+		while (cur)
+		{
+			++size;
+			cur = cur->right;
+		}
 
 		return size;
 	}
@@ -50,7 +88,7 @@ public:
 	{
 		using namespace std;
 
-		Node* current = first_;
+		Node* cur = first_;
 
 		if (IsEmpty())
 			cout << "Empty" << endl;
@@ -59,18 +97,54 @@ public:
 			cout << "Size = " << Size() << endl;
 
 			cout << " Forward: ";
-			// TODO:
+			
+			while (cur)
+			{
+				std::cout << cur->item << " ";
+
+				if (cur->right == nullptr)
+				{
+					break;
+				}
+
+				cur = cur->right;
+			}
+
 			cout << endl;
 
 			cout << "Backward: ";
-			// TODO:
+			
+			while (cur)
+			{
+				std::cout << cur->item << " ";
+
+				if (cur->left == nullptr)
+				{
+					break;
+				}
+
+				cur = cur->left;
+			}
+
 			cout << endl;
 		}
 	}
 
 	Node* Find(T item)
 	{
-		return nullptr; // TODO:
+		Node* cur = first_;
+
+		while (cur)
+		{
+			if (cur->item == item)
+			{
+				return cur;
+			}
+
+			cur = cur->right;
+		}
+
+		return nullptr;
 	}
 
 	void InsertBack(Node* node, T item)
@@ -81,18 +155,44 @@ public:
 		}
 		else
 		{
-			// TODO:
+			node->right = new Node{ item, node, node->right };
+			if (node->right->right)
+			{
+				node->right->right->left = node->right;
+			}
 		}
 	}
 
 	void PushFront(T item)
 	{
-		// TODO:
+		if (IsEmpty())
+		{
+			PushBack(item);
+		}
+		else
+		{
+			first_ = new Node{ item, nullptr, first_ };
+			first_->right->left = first_;
+		}
 	}
 
 	void PushBack(T item)
 	{
-		// TODO:
+		if (first_ == nullptr)
+		{
+			first_ = new Node;
+			first_->item = item;
+			return;
+		}
+
+		Node* cur = first_;
+
+		while (cur->right)
+		{
+			cur = cur->right;
+		}
+
+		cur->right = new Node{ item, cur, nullptr };
 	}
 
 	void PopFront()
@@ -106,7 +206,15 @@ public:
 
 		assert(first_);
 
-		// TODO:
+		Node* oldFirst = first_;
+		first_ = first_->right;
+		
+		if (first_)
+		{
+			first_->left = nullptr;
+		}
+
+		delete oldFirst;
 	}
 
 	void PopBack()
@@ -118,30 +226,65 @@ public:
 			return;
 		}
 
-		// 맨 뒤에서 하나 앞의 노드를 찾아야 합니다.
-
 		assert(first_);
 
-		// TODO:
+		
+		if (first_->right)
+		{
+			Node* cur = first_;
+
+			while (cur->right->right)
+			{
+				cur = cur->right;
+			}
+
+			delete cur->right;
+			cur->right = nullptr;
+		}
+		else
+		{
+			delete first_;
+			first_ = nullptr;
+		}
 	}
 
 	void Reverse()
 	{
-		// TODO:
+		Node* cur = first_;
+
+		while (cur)
+		{
+			std::swap(cur->left, cur->right);
+
+			if (cur->left == nullptr)
+			{
+				first_ = cur;
+				break;
+			}
+
+			cur = cur->left;
+		}
 	}
 
 	T Front()
 	{
 		assert(first_);
 
-		return T(); // TODO:
+		return first_->item; // TODO:
 	}
 
 	T Back()
 	{
 		assert(first_);
 
-		return T(); // TODO:
+		Node* cur = first_;
+
+		while (cur->right)
+		{
+			cur = cur->right;
+		}
+
+		return cur->item; // TODO:
 	}
 
 protected:
