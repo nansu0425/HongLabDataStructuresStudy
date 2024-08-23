@@ -3,6 +3,7 @@
 #include <iostream>
 #include <fstream>
 #include <string> // BinaryTree 출력
+#include <algorithm>
 
 #include "Queue.h"
 #include "Stack.h"
@@ -16,6 +17,11 @@ public:
 		T item = T();
 		Node* left = nullptr; // Left child
 		Node* right = nullptr; // Right child
+
+		~Node()
+		{
+			std::cout << "Deleted " << item << std::endl;
+		}
 	};
 
 	// 디버깅 도구: 큐에서 주소 대신에 아이템 출력
@@ -71,7 +77,12 @@ public:
 
 	int Sum(Node* node)
 	{
-		return 0; // TODO:
+		if (node == nullptr)
+		{
+			return 0;
+		}
+
+		return node->item + Sum(node->left) + Sum(node->right); 
 	}
 
 	int Height()
@@ -81,7 +92,12 @@ public:
 
 	int Height(Node* node)
 	{
-		return 0; // TODO:
+		if (node == nullptr)
+		{
+			return 0;
+		}
+
+		return std::max(Height(node->left), Height(node->right)) + 1; 
 	}
 
 	~BinaryTree()
@@ -93,36 +109,72 @@ public:
 	{
 		if (node)
 		{
-			// TODO: 힌트 Post-order
+			DeleteTree(node->left);
+			DeleteTree(node->right);
+			delete node;
 		}
 	}
 
 	void Preorder() { Preorder(root_); }
 	void Preorder(Node* node)
 	{
-		// TODO:
+		if (node == nullptr)
+		{
+			return;
+		}
+
+		Visit(node);
+		Preorder(node->left);
+		Preorder(node->right);
 	};
 
 	void Inorder() { Inorder(root_); }
 	void Inorder(Node* node)
 	{
-		// TODO:
+		if (node == nullptr)
+		{
+			return;
+		}
+
+		Inorder(node->left);
+		Visit(node);
+		Inorder(node->right);
 	}
 
 	void Postorder() { Postorder(root_); }
 	void Postorder(Node* node)
 	{
-		// TODO:
+		if (node == nullptr)
+		{
+			return;
+		}
+
+		Postorder(node->left);
+		Postorder(node->right);
+		Visit(node);
 	}
 
 	void LevelOrder()
 	{
 		Queue<Node*> q; // 힌트: MyQueue q;
-		Node* current = root_;
-		while (current)
+		q.Enqueue(root_);
+
+		while (!q.IsEmpty())
 		{
-			Visit(current);
-			// TODO:
+			Node* cur = q.Front();
+			q.Dequeue();
+
+			Visit(cur);
+			
+			if (cur->left)
+			{
+				q.Enqueue(cur->left);
+			}
+
+			if (cur->right)
+			{
+				q.Enqueue(cur->right);
+			}
 		}
 	}
 
@@ -135,7 +187,20 @@ public:
 
 		while (!s.IsEmpty())
 		{
-			// TODO:
+			Node* cur = s.Top();
+			s.Pop();
+
+			Visit(cur);
+
+			if (cur->right)
+			{
+				s.Push(cur->right);
+			}
+
+			if (cur->left)
+			{
+				s.Push(cur->left);
+			}
 		}
 	}
 
@@ -144,11 +209,26 @@ public:
 		if (!root_) return;
 
 		Stack<Node*> s;
+		Node* cur = root_;
 
-		Node* current = root_;
-		while (current || !s.IsEmpty())
+		// 순회 순서: left -> root -> right
+		while (cur || !s.IsEmpty())
 		{
-			// TODO:
+			// cur이 nullptr가 아니면 왼쪽으로 내려간다
+			while (cur)
+			{
+				s.Push(cur);
+				cur = cur->left;
+			}
+
+			assert(cur == nullptr);
+			
+			cur = s.Top();
+			s.Pop();
+
+			Visit(cur);
+
+			cur = cur->right;
 		}
 	}
 
@@ -161,12 +241,26 @@ public:
 
 		while (!s1.IsEmpty())
 		{
-			// TODO:
+			s2.Push(s1.Top());
+			s1.Pop();
+
+			Node* cur = s2.Top();
+
+			if (cur->left)
+			{
+				s1.Push(cur->left);
+			}
+			
+			if (cur->right)
+			{
+				s1.Push(cur->right);
+			}
 		}
 
 		while (!s2.IsEmpty())
 		{
-			// TODO:
+			Visit(s2.Top());
+			s2.Pop();
 		}
 	}
 
