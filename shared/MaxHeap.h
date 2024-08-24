@@ -63,15 +63,16 @@ public:
 		size_ += 1;
 		int current = size_; // 마지막에 추가가될 위치 (인덱스)
 
-		while (current != 1 /* && TODO */) // 부모 위치의 값이 추가하려는 값보다 작다면
+		// 부모 위치의 값이 추가하려는 값보다 작다면
+		while (current != 1 && heap_[current / 2] < item)
 		{
 			// 부모 위치의 값을 자식 위치로 복사해서 내린다.
-			// TODO:
+			heap_[current] = heap_[current / 2];
 
 			//cout << "Current = " << current << endl;
 			//Print();
 
-			// TODO:
+			current /= 2;
 		}
 
 		heap_[current] = item; // 최종적으로 결정된 위치에 복사
@@ -91,27 +92,34 @@ public:
 		T last_item = heap_[size_]; // 마지막 아이템 복사
 		size_--;					// 크기 줄이기
 
-		int current = 1;			// 루트 노드에서 시작
-		int child = 2;				// current * 2 (루트의 왼쪽 자식 인덱스)
-		while (child <= size_)
+		int curIdx = 1;			// 루트 노드에서 시작
+		int targetChildIdx = 2;				// current * 2 (루트의 왼쪽 자식 인덱스)
+		while (targetChildIdx <= size_)
 		{
 			// left, right 중에서 더 큰 자식의 인덱스를 찾는다. 이때 자식이 하나라면 찾을 필요 없음
-			// TODO:
+			if (targetChildIdx < size_ && heap_[targetChildIdx] < heap_[targetChildIdx + 1])
+			{
+				++targetChildIdx;
+			}
 
 			// 마지막 값이 더 큰 자식의 값 이상이면 더이상 적절한 위치를 찾을 필요가 없기 때문에 루프 중단
-			// TODO:
+			if (heap_[targetChildIdx] <= last_item)
+			{
+				break;
+			}
 
 			// 자식 값을 부모 위치로 복사, 
-			// TOD:
+			heap_[curIdx] = heap_[targetChildIdx];
 
 			//cout << "Current = " << current << ", child = " << child << endl;
 			//Print();
 
 			// 그 자식 위치로 current 인덱스 변경, child 인덱스도 그 다음 자식 위치로 변경
-			// TODO:
+			curIdx = targetChildIdx;
+			targetChildIdx = curIdx * 2;
 		}
 
-		heap_[current] = last_item;
+		heap_[curIdx] = last_item;
 	}
 
 private:
