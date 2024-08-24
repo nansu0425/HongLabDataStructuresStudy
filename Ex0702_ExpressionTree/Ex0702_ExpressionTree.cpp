@@ -14,7 +14,7 @@ int EvalPostfix(Queue<char>& q);
 class ExpressionTree : public BinaryTree<char>
 {
 public:
-	typedef BinaryTree<char> Base;
+	using Base = BinaryTree<char>;
 
 	ExpressionTree(Node* root) : Base(root) {}
 
@@ -31,18 +31,54 @@ public:
 
 	int Evaluate(Node* node)
 	{
-		// TODO: 트리에 저장된 수식의 결과값을 계산
-		return 0;
+		if (node->item == '+')
+		{
+			return Evaluate(node->left) + Evaluate(node->right);
+		}
+
+		if (node->item == '-')
+		{
+			return Evaluate(node->left) - Evaluate(node->right);
+		}
+
+		if (node->item == '*')
+		{
+			return Evaluate(node->left) * Evaluate(node->right);
+		}
+
+		if (node->item == '/')
+		{
+			return Evaluate(node->left) / Evaluate(node->right);
+		}
+		
+		return static_cast<int>(node->item - '0');
 	}
 
 	void Infix() { Infix(root_); cout << endl; }
 	void Infix(Node* node) {
-		// TODO: 수식을 Infix 형식으로 출력 (괄호 포함)
+		if (isdigit(node->item))
+		{
+			std::cout << node->item;
+			return;
+		}
+
+		std::cout << "(";
+		Infix(node->left);
+		std::cout << node->item;
+		Infix(node->right);
+		std::cout << ")";
 	}
 
 	void Postfix() { Postfix(root_);  cout << endl; }
 	void Postfix(Node* node) {
-		// TODO: 수식을 Postfix 형식으로 출력
+		if (node == nullptr)
+		{
+			return;
+		}
+
+		Postfix(node->left);
+		Postfix(node->right);
+		std::cout << node->item;
 	}
 
 	// Infix -> postfix -> expression tree
@@ -68,13 +104,20 @@ public:
 			char c = postfix.Front();
 			postfix.Dequeue();
 
-			if (c >= '0' && c <= '9')
+			if (IsDigit(c))
 			{
-				// TODO:
+				Node* digit = new Node{ c, nullptr, nullptr };
+				s.Push(digit);
 			}
 			else
 			{
-				// TODO:
+				Node* right = s.Top();
+				s.Pop();
+				Node* left = s.Top();
+				s.Pop();
+
+				Node* op = new Node{ c, left, right };
+				s.Push(op);
 			}
 		}
 
