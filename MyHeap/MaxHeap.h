@@ -31,11 +31,14 @@ private:
 	int		getParentIdx(int childIdx) const { return (childIdx - 1) / 2; }
 	int		getLeftIdx(int parentIdx) const { return parentIdx * 2 + 1; }
 	int		getRightIdx(int parentIdx) const { return parentIdx * 2 + 2; }
+	
+	void	setMinKeyIdx();
 
 private:
 	T*		m_arr = nullptr;
 	int		m_arrSize = 0;
 	int		m_heapSize = 0;
+	int		m_minKeyIdx = -1;
 };
 
 template<typename T>
@@ -50,19 +53,47 @@ inline MaxHeap<T>::MaxHeap(T* arr, int arrSize, int heapSize)
 	// 멤버 배열에 파라미터 배열을 복사하고 힙 구조로 만든다
 	std::copy(arr, arr + m_arrSize, m_arr);
 	buildHeap();
+
+	setMinKeyIdx();
 }
 
 template<typename T>
 inline void MaxHeap<T>::insert(const T& key)
 {
-	assert(m_heapSize < m_arrSize);
+	int targetIdx = -1;
 
-	// 마지막 노드 뒤에 새로운 노드 추가
-	++m_heapSize;
-	m_arr[m_heapSize - 1] = key;
+	// 힙이 가득 찬 상태
+	if (m_heapSize == m_arrSize)
+	{
+		assert(m_minKeyIdx > -1);
 
-	// 추가된 노드의 key를 heap property를 만족하는 위치로 올린다
-	increaseKey(m_heapSize - 1);
+		// 힙의 최소 key보다 삽입하려는 key가 크면
+		// 최소 key 노드가 삽입 대상 노드
+		if (m_arr[m_minKeyIdx] < key)
+		{
+			targetIdx = m_minKeyIdx;
+		}
+		else
+		{
+			return;
+		}
+	}
+	else
+	{
+		// 마지막 노드 뒤에 새로운 노드가 삽입 대상 노드
+		++m_heapSize;
+		targetIdx = m_heapSize - 1;
+	}
+
+	assert(targetIdx > -1);
+
+	// 삽입 대상 노드에 key 삽입
+	m_arr[targetIdx] = key;
+
+	// key를 heap property를 만족하는 위치로 올리고
+	// 최소 key 인덱스를 다시 설정
+	increaseKey(targetIdx);
+	setMinKeyIdx();
 }
 
 template<typename T>
@@ -217,4 +248,30 @@ inline void MaxHeap<T>::increaseKey(int targetIdx)
 		std::swap(m_arr[getParentIdx(targetIdx)], m_arr[targetIdx]);
 		targetIdx = getParentIdx(targetIdx);
 	}
+}
+
+template<typename T>
+inline void MaxHeap<T>::setMinKeyIdx()
+{
+	assert(m_heapSize > 0);
+
+	if (m_heapSize == 1)
+	{
+		m_minKeyIdx = 0;
+		return;
+	}
+
+	const int leafNodeStartIdx = m_heapSize / 2;
+	int minIdx = leafNodeStartIdx;
+
+	// 최소 key를 갖는 리프 노드의 인덱스 탐색
+	for (int curIdx = leafNodeStartIdx + 1; curIdx < m_heapSize; ++curIdx)
+	{
+		if (m_arr[curIdx] < m_arr[minIdx])
+		{
+			minIdx = curIdx;
+		}
+	}
+
+	m_minKeyIdx = minIdx;
 }

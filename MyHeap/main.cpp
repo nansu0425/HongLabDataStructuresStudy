@@ -14,6 +14,12 @@ int main()
 		std::cout << mh << std::endl;
 		mh.insert(arr[arrIdx]);
 	}
+
+	for (int key = 7; key < 10; ++key)
+	{
+		std::cout << mh << std::endl;
+		mh.insert(key);
+	}
 	std::cout << mh << std::endl;
 
 	std::cout << "--------------------------------" << std::endl;
