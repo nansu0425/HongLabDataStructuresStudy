@@ -21,7 +21,7 @@ class LinkedList
 {
 public:
 	LinkedList() = default;
-	LinkedList(const T* arr, int arrSize);
+	LinkedList(const T* pArrFirst, const T* pArrLast);
 	~LinkedList();
 
 	void			append(const T& data);
@@ -37,16 +37,16 @@ private:
 };
 
 template<typename T>
-inline LinkedList<T>::LinkedList(const T* arr, int arrSize)
+inline LinkedList<T>::LinkedList(const T* pArrFirst, const T* pArrLast)
 {
-	assert((arr != nullptr) && (arrSize > 0));
+	assert((pArrFirst != nullptr) && (pArrFirst != pArrLast));
 
-	for (int arrIdx = 0; arrIdx < arrSize; ++arrIdx)
+	for (const T* pCur = pArrFirst; pCur != pArrLast; ++pCur)
 	{
-		append(arr[arrIdx]);
+		append(*pCur);
 	}
 
-	assert((m_pFirst != nullptr) && (m_pLast != nullptr));
+	assert(!isEmpty());
 }
 
 template<typename T>
