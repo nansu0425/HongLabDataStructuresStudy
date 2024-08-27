@@ -15,7 +15,7 @@ class PriorityQueue
 	using PtrNode = Node<T>*;
 
 public:
-	PriorityQueue(const T* arr, int numElem, int queueSize, PriorityComparator fPriorityComparator);
+	PriorityQueue(const T* arrFirst, const T* arrLast, int queueSize, PriorityComparator fPriorityComparator);
 	PriorityQueue(int queueSize, PriorityComparator fPriorityComparator);
 	~PriorityQueue();
 
