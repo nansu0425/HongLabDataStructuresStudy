@@ -9,6 +9,11 @@ struct Node
 	T			data = T();
 	Node<T>*	pPrev = nullptr;
 	Node<T>*	pNext = nullptr;;
+
+	~Node()
+	{
+		data.~T();
+	}
 };
 
 template<typename T>
