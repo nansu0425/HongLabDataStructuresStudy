@@ -27,8 +27,8 @@ public:
 	void			append(const T& data);
 	void			remove(const Node<T>* pTarget);
 
-	const Node<T>*	getPtrFirst() const { return m_pFirst; }
-	const Node<T>*	getPtrLast() const { return m_pLast; }
+	Node<T>*		getPtrFirst() const { return m_pFirst; }
+	Node<T>*		getPtrLast() const { return m_pLast; }
 	bool			isEmpty() const;
 
 private:
