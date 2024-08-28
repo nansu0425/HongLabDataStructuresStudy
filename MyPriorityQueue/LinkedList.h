@@ -6,12 +6,22 @@
 template<typename T>
 struct Node
 {
-	T			data = T();
+	T*			pData = nullptr;
 	Node<T>*	pPrev = nullptr;
 	Node<T>*	pNext = nullptr;;
 
-	Node(const T& data)	{ this->data = data; }
-	~Node() { data.~T(); }
+	Node(const T& data) 
+	{ 
+		pData = new T(data); 
+	}
+
+	~Node() 
+	{ 
+		if (pData != nullptr)
+		{
+			delete pData;
+		}
+	}
 };
 
 template<typename T>
@@ -19,7 +29,7 @@ class LinkedList
 {
 public:
 	LinkedList() = default;
-	LinkedList(const T* pArrFirst, const T* pArrLast);
+	LinkedList(const T* pArr, int numElem);
 	~LinkedList();
 
 	void			append(const T& data);
@@ -35,13 +45,13 @@ private:
 };
 
 template<typename T>
-inline LinkedList<T>::LinkedList(const T* pArrFirst, const T* pArrLast)
+inline LinkedList<T>::LinkedList(const T* pArr, int numElem)
 {
-	assert((pArrFirst != nullptr) && (pArrFirst != pArrLast));
+	assert((pArr != nullptr) && (numElem > 0));
 
-	for (const T* pCur = pArrFirst; pCur != pArrLast; ++pCur)
+	for (int arrIdx = 0; arrIdx < numElem; ++arrIdx)
 	{
-		append(*pCur);
+		append(pArr[arrIdx]);
 	}
 
 	assert(!isEmpty());
@@ -133,7 +143,7 @@ std::ostream& operator<<(std::ostream& os, const LinkedList<T>& li)
 
 	while (pCur != nullptr)
 	{
-		os << pCur->data << " ";
+		os << *pCur->pData << " ";
 		pCur = pCur->pNext;
 	}
 
