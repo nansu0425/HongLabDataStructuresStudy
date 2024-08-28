@@ -10,10 +10,8 @@ struct Node
 	Node<T>*	pPrev = nullptr;
 	Node<T>*	pNext = nullptr;;
 
-	~Node()
-	{
-		data.~T();
-	}
+	Node(const T& data)	{ this->data = data; }
+	~Node() { data.~T(); }
 };
 
 template<typename T>
@@ -63,7 +61,7 @@ inline LinkedList<T>::~LinkedList()
 template<typename T>
 inline void LinkedList<T>::append(const T& data)
 {
-	Node<T>* pNode = new Node<T>{ data, nullptr, nullptr };
+	Node<T>* pNode = new Node<T>(data);
 
 	// 노드가 없는 경우
 	if (isEmpty())
