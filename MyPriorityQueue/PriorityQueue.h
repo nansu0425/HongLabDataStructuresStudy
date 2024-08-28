@@ -16,7 +16,7 @@ template<typename T>
 class PriorityQueue
 {
 	using PriorityComparator = bool (*)(const T& lower, const T& higher);
-	using NodePtr = Node<T>*;
+	using PtrNode = Node<T>*;
 
 public:
 	PriorityQueue(const T* pArrFirst, const T* pArrLast, int queueSize, PriorityComparator fPriorityComparator);
@@ -28,10 +28,11 @@ public:
 
 	const T&	getHighest() const { return m_pMaxHeapArr[0]; }
 	const T&	getLowest() const { return m_pMinHeapArr[0]; }
-	NodePtr*	getPtrMaxHeapArr() const { return m_pMaxHeapArr; }
-	NodePtr*	getPtrMinHeapArr() const { return m_pMinHeapArr; }
+	PtrNode*	getPtrMaxHeapArr() const { return m_pMaxHeapArr; }
+	PtrNode*	getPtrMinHeapArr() const { return m_pMinHeapArr; }
 	int			getHeapSize() const { return m_heapSize; }
 	bool		isEmpty() const { return m_pList->isEmpty(); }
+	bool		isFull() const { return (m_arrSize == m_heapSize); }
 
 	static void sort(T* arr, int arrSize, PriorityComparator fPriorityComparator);
 
@@ -40,8 +41,9 @@ private:
 
 	void		heapifyMax(int rootIdx);
 	void		heapifyMin(int rootIdx);
+	void		movePtrNodeUpwardMax(int targetIdx);
+	void		movePtrNodeUpwardMin(int targetIdx);
 	void		buildHeap(HeapType heapType = HeapType::NONE);
-	void		movePtrNodeUpward(int targetIdx, HeapType heapType);
 
 	int			getParentIdx(int childIdx) const { return (childIdx - 1) / 2; }
 	int			getLeftIdx(int parentIdx) const { return parentIdx * 2 + 1; }
@@ -49,11 +51,13 @@ private:
 
 private:
 	LinkedList<T>*		m_pList = nullptr;
-	NodePtr*			m_pMaxHeapArr = nullptr;
-	NodePtr*			m_pMinHeapArr = nullptr;
+	PtrNode*			m_pMaxHeapArr = nullptr;
+	PtrNode*			m_pMinHeapArr = nullptr;
 	int					m_arrSize = 0;
 	int					m_heapSize = 0;
 	PriorityComparator	m_fPriorityComparator = nullptr;
+	int					m_maxHeapLowestIdx = -1;
+	int					m_minHeapHighestIdx = -1;
 };
 
 template<typename T>
@@ -109,14 +113,14 @@ inline PriorityQueue<T>::PriorityQueue(const T* pArrFirst, const T* pArrLast, in
 	m_pList = new LinkedList<T>(pArrFirst, pArrLast);
 
 	// 힙 배열 생성
-	m_pMaxHeapArr = new NodePtr[queueSize];
-	m_pMinHeapArr = new NodePtr[queueSize];
+	m_pMaxHeapArr = new PtrNode[queueSize];
+	m_pMinHeapArr = new PtrNode[queueSize];
 
 	// 힙 배열 초기화
 	std::fill(m_pMaxHeapArr, m_pMaxHeapArr + queueSize, nullptr);
 	std::fill(m_pMinHeapArr, m_pMinHeapArr + queueSize, nullptr);
 
-	NodePtr pCur = m_pList->getPtrFirst();
+	PtrNode pCur = m_pList->getPtrFirst();
 	
 	// 힙 배열의 원소에 연결 리스트 노드의 주소를 넣는다
 	for (int arrIdx = 0; arrIdx < numArrElem; ++arrIdx)
@@ -143,8 +147,8 @@ inline PriorityQueue<T>::PriorityQueue(int queueSize, PriorityComparator fPriori
 	m_pList = new LinkedList<T>();
 
 	// 힙 배열 생성
-	m_pMaxHeapArr = new NodePtr[queueSize];
-	m_pMinHeapArr = new NodePtr[queueSize];
+	m_pMaxHeapArr = new PtrNode[queueSize];
+	m_pMinHeapArr = new PtrNode[queueSize];
 
 	// 힙 배열 초기화
 	std::fill(m_pMaxHeapArr, m_pMaxHeapArr + queueSize, nullptr);
@@ -173,6 +177,38 @@ inline PriorityQueue<T>::~PriorityQueue()
 	{
 		delete m_pList;
 	}
+}
+
+template<typename T>
+inline void PriorityQueue<T>::insert(const T& data)
+{
+	int targetIdx = -1;
+
+	// 힙 배열이 가득 찬 상태
+	if (isFull())
+	{
+		// TODO: 우선순위가 가장 낮은 노드의 data를 새로운 data로 변경 (새로운 data의 우선순위가 더 높을 때)
+	}
+	// 힙 배열에 여유가 있는 경우
+	else
+	{
+		// 새로운 노드 추가
+		m_pList->append(data);
+
+		// 힙 크기 증가
+		++m_heapSize;
+
+		// 힙의 마지막 원소는 새로 추가된 노드를 가리킨다
+		m_pMaxHeapArr[m_heapSize - 1] = m_pList->getPtrLast();
+		m_pMinHeapArr[m_heapSize - 1] = m_pList->getPtrLast();
+
+		targetIdx = m_heapSize - 1;
+	}
+
+	assert((-1 < targetIdx) && (targetIdx < m_heapSize));
+
+	movePtrNodeUpwardMax(targetIdx);
+	movePtrNodeUpwardMin(targetIdx);
 }
 
 template<typename T>
@@ -242,6 +278,30 @@ inline void PriorityQueue<T>::heapifyMin(int rootIdx)
 		// lowestIdx와 rootIdx의 노드 포인터를 스왑하고 rootIdx를 lowestIdx로 설정
 		std::swap(m_pMinHeapArr[lowestIdx], m_pMinHeapArr[rootIdx]);
 		rootIdx = lowestIdx;
+	}
+}
+
+template<typename T>
+inline void PriorityQueue<T>::movePtrNodeUpwardMax(int targetIdx)
+{
+	// target 노드가 부모 노드보다 우선순위가 더 높을 때 부모와 target 스왑 후 부모를 target으로 설정
+	while ((targetIdx != 0) && 
+		m_fPriorityComparator(m_pMaxHeapArr[getParentIdx(targetIdx)]->data, m_pMaxHeapArr[targetIdx]->data))
+	{
+		std::swap(m_pMaxHeapArr[getParentIdx(targetIdx)], m_pMaxHeapArr[targetIdx]);
+		targetIdx = getParentIdx(targetIdx);
+	}
+}
+
+template<typename T>
+inline void PriorityQueue<T>::movePtrNodeUpwardMin(int targetIdx)
+{
+	// target 노드가 부모 노드보다 우선순위가 더 낮을 때 부모와 target 스왑 후 부모를 target으로 설정
+	while ((targetIdx != 0) &&
+		m_fPriorityComparator(m_pMinHeapArr[targetIdx]->data, m_pMinHeapArr[getParentIdx(targetIdx)]->data))
+	{
+		std::swap(m_pMinHeapArr[getParentIdx(targetIdx)], m_pMinHeapArr[targetIdx]);
+		targetIdx = getParentIdx(targetIdx);
 	}
 }
 
