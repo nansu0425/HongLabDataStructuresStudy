@@ -2,6 +2,7 @@
 
 #include <cassert>
 #include <iostream>
+#include <utility>
 
 template<typename T>
 struct Node
@@ -10,9 +11,9 @@ struct Node
 	Node<T>*	pPrev = nullptr;
 	Node<T>*	pNext = nullptr;;
 
-	Node(const T& data) 
+	Node(T&& data) 
 	{ 
-		pData = new T(data); 
+		pData = new T(std::move(data));
 	}
 
 	~Node() 
@@ -29,10 +30,9 @@ class LinkedList
 {
 public:
 	LinkedList() = default;
-	LinkedList(const T* pArr, int numElem);
 	~LinkedList();
 
-	void			append(const T& data);
+	void			append(T&& data);
 	void			remove(const Node<T>* pTarget);
 
 	Node<T>*		getPtrFirst() const { return m_pFirst; }
@@ -43,19 +43,6 @@ private:
 	Node<T>*		m_pFirst = nullptr;
 	Node<T>*		m_pLast = nullptr;
 };
-
-template<typename T>
-inline LinkedList<T>::LinkedList(const T* pArr, int numElem)
-{
-	assert((pArr != nullptr) && (numElem > 0));
-
-	for (int arrIdx = 0; arrIdx < numElem; ++arrIdx)
-	{
-		append(pArr[arrIdx]);
-	}
-
-	assert(!isEmpty());
-}
 
 template<typename T>
 inline LinkedList<T>::~LinkedList()
@@ -69,9 +56,9 @@ inline LinkedList<T>::~LinkedList()
 }
 
 template<typename T>
-inline void LinkedList<T>::append(const T& data)
+inline void LinkedList<T>::append(T&& data)
 {
-	Node<T>* pNode = new Node<T>(data);
+	Node<T>* pNode = new Node<T>(std::move(data));
 
 	// 노드가 없는 경우
 	if (isEmpty())
