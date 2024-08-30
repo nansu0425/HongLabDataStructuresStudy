@@ -4,22 +4,60 @@
 
 #include <algorithm>
 #include <iostream>
+#include <utility>
 
 enum class HeapType
 {
 	NONE,
-	MIN,
 	MAX,
+	MIN,
+};
+
+template<typename T>
+struct QueueData
+{
+	T*			pObj = nullptr;
+	int			maxHeapIdx = -1;
+	int			minHeapIdx = -1;
+
+	QueueData(const T& obj)
+		: pObj(new T(obj))
+	{ }
+
+	QueueData(T&& obj)
+		: pObj(new T(std::move(obj)))
+	{ }
+
+	QueueData(const QueueData& other)
+		: pObj(new T(*other.pObj))
+		, maxHeapIdx(other.maxHeapIdx)
+		, minHeapIdx(other.minHeapIdx)
+	{ }
+
+	QueueData(QueueData&& other)
+		: pObj(std::exchange(other.pObj, nullptr))
+		, maxHeapIdx(other.maxHeapIdx)
+		, minHeapIdx(other.minHeapIdx)
+	{ }
+
+	~QueueData()
+	{
+		if (pObj != nullptr)
+		{
+			delete pObj;
+		}
+	}
 };
 
 template<typename T>
 class PriorityQueue
 {
+	using Data = QueueData<T>;
 	using PriorityComparator = bool (*)(const T& lower, const T& higher);
-	using PtrNode = Node<T>*;
+	using PtrNode = Node<Data>*;
 
 public:
-	PriorityQueue(const T* pArrFirst, const T* pArrLast, int queueSize, PriorityComparator fPriorityComparator);
+	PriorityQueue(const T* pArr, int numElem, int queueSize, PriorityComparator fPriorityComparator);
 	PriorityQueue(int queueSize, PriorityComparator fPriorityComparator);
 	~PriorityQueue();
 
@@ -50,7 +88,7 @@ private:
 	int			getRightIdx(int parentIdx) const { return parentIdx * 2 + 2; }
 
 private:
-	LinkedList<T>*		m_pList = nullptr;
+	LinkedList<Data>*	m_pList = nullptr;
 	PtrNode*			m_pMaxHeapArr = nullptr;
 	PtrNode*			m_pMinHeapArr = nullptr;
 	int					m_arrSize = 0;
@@ -63,8 +101,8 @@ private:
 template<typename T>
 std::ostream& operator<<(std::ostream& os, const PriorityQueue<T>& pq)
 {
-	Node<T>** pMaxHeapArr = pq.getPtrMaxHeapArr();
-	Node<T>** pMinHeapArr = pq.getPtrMinHeapArr();
+	Node<QueueData<T>>** pMaxHeapArr = pq.getPtrMaxHeapArr();
+	Node<QueueData<T>>** pMinHeapArr = pq.getPtrMinHeapArr();
 	const int heapSize = pq.getHeapSize();
 
 	// 노드가 없는 경우
@@ -81,7 +119,7 @@ std::ostream& operator<<(std::ostream& os, const PriorityQueue<T>& pq)
 
 		for (int arrIdx = 0; arrIdx < heapSize; ++arrIdx)
 		{
-			os << pMaxHeapArr[arrIdx]->data << " ";
+			os << *pMaxHeapArr[arrIdx]->pData->pObj << " ";
 		}
 	}
 	os << std::endl;
@@ -93,7 +131,7 @@ std::ostream& operator<<(std::ostream& os, const PriorityQueue<T>& pq)
 
 		for (int arrIdx = 0; arrIdx < heapSize; ++arrIdx)
 		{
-			os << pMinHeapArr[arrIdx]->data << " ";
+			os << *pMinHeapArr[arrIdx]->pData->pObj << " ";
 		}
 	}
 	os << std::endl;
@@ -102,15 +140,22 @@ std::ostream& operator<<(std::ostream& os, const PriorityQueue<T>& pq)
 }
 
 template<typename T>
-inline PriorityQueue<T>::PriorityQueue(const T* pArrFirst, const T* pArrLast, int queueSize, PriorityComparator fPriorityComparator)
+inline PriorityQueue<T>::PriorityQueue(const T* pArr, int numElem, int queueSize, PriorityComparator fPriorityComparator)
 {
-	const int numArrElem = static_cast<int>(pArrLast - pArrFirst);
-
 	// 배열 원소 개수는 큐의 크기를 넘을 수 없다
-	assert(numArrElem <= queueSize);
+	assert((0 < numElem) && (numElem <= queueSize));
 
 	// 연결 리스트 초기화
-	m_pList = new LinkedList<T>(pArrFirst, pArrLast);
+	m_pList = new LinkedList<Data>();
+
+	for (int arrIdx = 0; arrIdx < numElem; ++arrIdx)
+	{
+		m_pList->append(QueueData<T>(pArr[arrIdx]));
+		m_pList->getPtrLast()->pData->maxHeapIdx = arrIdx;
+		m_pList->getPtrLast()->pData->minHeapIdx = arrIdx;
+	}
+
+	assert(!m_pList->isEmpty());
 
 	// 힙 배열 생성
 	m_pMaxHeapArr = new PtrNode[queueSize];
@@ -123,7 +168,7 @@ inline PriorityQueue<T>::PriorityQueue(const T* pArrFirst, const T* pArrLast, in
 	PtrNode pCur = m_pList->getPtrFirst();
 	
 	// 힙 배열의 원소에 연결 리스트 노드의 주소를 넣는다
-	for (int arrIdx = 0; arrIdx < numArrElem; ++arrIdx)
+	for (int arrIdx = 0; arrIdx < numElem; ++arrIdx)
 	{
 		m_pMaxHeapArr[arrIdx] = pCur;
 		m_pMinHeapArr[arrIdx] = pCur;
@@ -133,7 +178,7 @@ inline PriorityQueue<T>::PriorityQueue(const T* pArrFirst, const T* pArrLast, in
 
 	// 힙 배열 크기와 배열 내의 힙 크기, 우선순위 판단 함수 설정
 	m_arrSize = queueSize;
-	m_heapSize = numArrElem;
+	m_heapSize = numElem;
 	m_fPriorityComparator = fPriorityComparator;
 
 	// 힙 크기만큼 배열내의 원소들을 힙 구조로 재배열
@@ -144,7 +189,7 @@ template<typename T>
 inline PriorityQueue<T>::PriorityQueue(int queueSize, PriorityComparator fPriorityComparator)
 {
 	// 연결 리스트 초기화
-	m_pList = new LinkedList<T>();
+	m_pList = new LinkedList<Data>();
 
 	// 힙 배열 생성
 	m_pMaxHeapArr = new PtrNode[queueSize];
