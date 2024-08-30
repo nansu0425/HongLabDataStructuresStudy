@@ -65,8 +65,8 @@ public:
 	void		insert(U&& data);
 	T			extract(HeapType heapType);
 
-	const T&	getHighest() const { return m_pMaxHeapArr[0]; }
-	const T&	getLowest() const { return m_pMinHeapArr[0]; }
+	const T&	getHighest() const { return *m_pMaxHeapArr[0]->pData->pObj; }
+	const T&	getLowest() const { return *m_pMinHeapArr[0]->pData->pObj; }
 	PtrNode*	getPtrMaxHeapArr() const { return m_pMaxHeapArr; }
 	PtrNode*	getPtrMinHeapArr() const { return m_pMinHeapArr; }
 	int			getHeapSize() const { return m_heapSize; }
@@ -232,7 +232,20 @@ inline void PriorityQueue<T>::insert(U&& data)
 	// 힙 배열이 가득 찬 상태
 	if (isFull())
 	{
-		// TODO: 우선순위가 가장 낮은 노드의 data를 새로운 data로 변경 (새로운 data의 우선순위가 더 높을 때)
+		// 우선순위가 가장 낮은 data보다 새로운 data의 우선순위가 더 높을 때
+		if (m_fPriorityComparator(getLowest(), data))
+		{
+			// 우선순위가 가장 낮은 노드의 data를 새로운 data로 변경
+			*m_pMinHeapArr[0]->pData->pObj = data;
+			targetIdx = m_pMinHeapArr[0]->pData->maxHeapIdx;
+
+			// 최소 힙을 힙 구조에 맞게 변경
+			heapifyMin(0);
+		}
+		else
+		{
+			return;
+		}
 	}
 	// 힙 배열에 여유가 있는 경우
 	else
@@ -253,12 +266,15 @@ inline void PriorityQueue<T>::insert(U&& data)
 		pLast->pData->minHeapIdx = m_heapSize - 1;
 
 		targetIdx = m_heapSize - 1;
+
+		// 최소 힙의 추가된 노드를 힙 구조에 맞는 위치로 올린다
+		movePtrNodeUpwardMin(targetIdx);
 	}
 
 	assert((-1 < targetIdx) && (targetIdx < m_heapSize));
 
+	// 최대 힙의 값이 변경되거나 새로운 값인 노드를 힙 구조에 맞는 위치로 올린다
 	movePtrNodeUpwardMax(targetIdx);
-	movePtrNodeUpwardMin(targetIdx);
 }
 
 template<typename T>
