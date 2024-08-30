@@ -62,11 +62,11 @@ public:
 	~PriorityQueue();
 
 	template<typename U>
-	void		insert(U&& data);
+	void		insert(U&& obj);
 	T			extract(HeapType heapType);
 
-	const T&	getHighest() const { return *m_pMaxHeapArr[0]->pData->pObj; }
-	const T&	getLowest() const { return *m_pMinHeapArr[0]->pData->pObj; }
+	const T&	getHighestObj() const { return *m_pMaxHeapArr[0]->pData->pObj; }
+	const T&	getLowestObj() const { return *m_pMinHeapArr[0]->pData->pObj; }
 	PtrNode*	getPtrMaxHeapArr() const { return m_pMaxHeapArr; }
 	PtrNode*	getPtrMinHeapArr() const { return m_pMinHeapArr; }
 	int			getHeapSize() const { return m_heapSize; }
@@ -225,18 +225,18 @@ inline PriorityQueue<T>::~PriorityQueue()
 
 template<typename T>
 template<typename U>
-inline void PriorityQueue<T>::insert(U&& data)
+inline void PriorityQueue<T>::insert(U&& obj)
 {
 	int targetIdx = -1;
 
 	// 힙 배열이 가득 찬 상태
 	if (isFull())
 	{
-		// 우선순위가 가장 낮은 data보다 새로운 data의 우선순위가 더 높을 때
-		if (m_fPriorityComparator(getLowest(), data))
+		// 우선순위가 가장 낮은 오브젝트보다 새로운 오브젝트의 우선순위가 더 높을 때
+		if (m_fPriorityComparator(getLowestObj(), obj))
 		{
-			// 우선순위가 가장 낮은 노드의 data를 새로운 data로 변경
-			*m_pMinHeapArr[0]->pData->pObj = data;
+			// 우선순위가 가장 낮은 노드의 오브젝트를 새로운 오브젝트로 변경
+			*m_pMinHeapArr[0]->pData->pObj = obj;
 			targetIdx = m_pMinHeapArr[0]->pData->maxHeapIdx;
 
 			// 최소 힙을 힙 구조에 맞게 변경
@@ -251,7 +251,7 @@ inline void PriorityQueue<T>::insert(U&& data)
 	else
 	{
 		// 새로운 노드 추가
-		m_pList->append(std::forward<U>(data));
+		m_pList->append(std::forward<U>(obj));
 		Node<Data>* pLast = m_pList->getPtrLast();
 
 		// 힙 크기 증가
