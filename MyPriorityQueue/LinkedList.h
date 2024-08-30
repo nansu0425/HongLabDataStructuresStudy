@@ -16,7 +16,7 @@ struct Node
 		pData = new T(data);
 	}
 
-	Node(T&& data) 
+	Node(T&& data) noexcept
 	{ 
 		pData = new T(std::move(data));
 	}
