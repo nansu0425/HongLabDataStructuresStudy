@@ -24,7 +24,7 @@ struct QueueData
 		: pObj(new T(obj))
 	{ }
 
-	QueueData(T&& obj)
+	QueueData(T&& obj) noexcept
 		: pObj(new T(std::move(obj)))
 	{ }
 
@@ -34,7 +34,7 @@ struct QueueData
 		, minHeapIdx(other.minHeapIdx)
 	{ }
 
-	QueueData(QueueData&& other)
+	QueueData(QueueData&& other) noexcept
 		: pObj(std::exchange(other.pObj, nullptr))
 		, maxHeapIdx(other.maxHeapIdx)
 		, minHeapIdx(other.minHeapIdx)
@@ -61,7 +61,8 @@ public:
 	PriorityQueue(int queueSize, PriorityComparator fPriorityComparator);
 	~PriorityQueue();
 
-	void		insert(const T& data);
+	template<typename U>
+	void		insert(U&& data);
 	T			extract(HeapType heapType);
 
 	const T&	getHighest() const { return m_pMaxHeapArr[0]; }
@@ -148,7 +149,7 @@ inline PriorityQueue<T>::PriorityQueue(const T* pArr, int numElem, int queueSize
 
 	for (int arrIdx = 0; arrIdx < numElem; ++arrIdx)
 	{
-		m_pList->append(QueueData<T>(pArr[arrIdx]));
+		m_pList->append(pArr[arrIdx]);
 		m_pList->getPtrLast()->pData->maxHeapIdx = arrIdx;
 		m_pList->getPtrLast()->pData->minHeapIdx = arrIdx;
 	}
@@ -223,7 +224,8 @@ inline PriorityQueue<T>::~PriorityQueue()
 }
 
 template<typename T>
-inline void PriorityQueue<T>::insert(const T& data)
+template<typename U>
+inline void PriorityQueue<T>::insert(U&& data)
 {
 	int targetIdx = -1;
 
@@ -236,14 +238,19 @@ inline void PriorityQueue<T>::insert(const T& data)
 	else
 	{
 		// 새로운 노드 추가
-		m_pList->append(data);
+		m_pList->append(std::forward<U>(data));
+		Node<Data>* pLast = m_pList->getPtrLast();
 
 		// 힙 크기 증가
 		++m_heapSize;
 
 		// 힙의 마지막 원소는 새로 추가된 노드를 가리킨다
-		m_pMaxHeapArr[m_heapSize - 1] = m_pList->getPtrLast();
-		m_pMinHeapArr[m_heapSize - 1] = m_pList->getPtrLast();
+		m_pMaxHeapArr[m_heapSize - 1] = pLast;
+		m_pMinHeapArr[m_heapSize - 1] = pLast;
+
+		// 인덱스 정보 저장
+		pLast->pData->maxHeapIdx = m_heapSize - 1;
+		pLast->pData->minHeapIdx = m_heapSize - 1;
 
 		targetIdx = m_heapSize - 1;
 	}
@@ -331,9 +338,10 @@ inline void PriorityQueue<T>::movePtrNodeUpwardMax(int targetIdx)
 {
 	// target 노드가 부모 노드보다 우선순위가 더 높을 때 부모와 target 스왑 후 부모를 target으로 설정
 	while ((targetIdx != 0) && 
-		m_fPriorityComparator(m_pMaxHeapArr[getParentIdx(targetIdx)]->data, m_pMaxHeapArr[targetIdx]->data))
+		m_fPriorityComparator(*m_pMaxHeapArr[getParentIdx(targetIdx)]->pData->pObj, *m_pMaxHeapArr[targetIdx]->pData->pObj))
 	{
 		std::swap(m_pMaxHeapArr[getParentIdx(targetIdx)], m_pMaxHeapArr[targetIdx]);
+		std::swap(m_pMaxHeapArr[getParentIdx(targetIdx)]->pData->maxHeapIdx, m_pMaxHeapArr[targetIdx]->pData->maxHeapIdx);
 		targetIdx = getParentIdx(targetIdx);
 	}
 }
@@ -343,9 +351,10 @@ inline void PriorityQueue<T>::movePtrNodeUpwardMin(int targetIdx)
 {
 	// target 노드가 부모 노드보다 우선순위가 더 낮을 때 부모와 target 스왑 후 부모를 target으로 설정
 	while ((targetIdx != 0) &&
-		m_fPriorityComparator(m_pMinHeapArr[targetIdx]->data, m_pMinHeapArr[getParentIdx(targetIdx)]->data))
+		m_fPriorityComparator(*m_pMinHeapArr[targetIdx]->pData->pObj, *m_pMinHeapArr[getParentIdx(targetIdx)]->pData->pObj))
 	{
 		std::swap(m_pMinHeapArr[getParentIdx(targetIdx)], m_pMinHeapArr[targetIdx]);
+		std::swap(m_pMinHeapArr[getParentIdx(targetIdx)]->pData->minHeapIdx, m_pMinHeapArr[targetIdx]->pData->minHeapIdx);
 		targetIdx = getParentIdx(targetIdx);
 	}
 }
