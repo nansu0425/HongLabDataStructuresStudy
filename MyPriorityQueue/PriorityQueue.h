@@ -265,14 +265,14 @@ inline void PriorityQueue<T>::heapifyMax(int rootIdx)
 		const int rightIdx = getRightIdx(rootIdx);
 
 		// 왼쪽 자식 노드의 우선순위가 높으면 highestIdx를 leftIdx로 설정
-		if (m_fPriorityComparator(m_pMaxHeapArr[highestIdx]->data, m_pMaxHeapArr[leftIdx]->data))
+		if (m_fPriorityComparator(*m_pMaxHeapArr[highestIdx]->pData->pObj, *m_pMaxHeapArr[leftIdx]->pData->pObj))
 		{
 			highestIdx = leftIdx;
 		}
 
 		// 오른쪽 노드가 highestIdx 노드보다 우선순위가 높으면 highestIdx를 rightIdx로 설정
 		if ((rightIdx < m_heapSize) && 
-			m_fPriorityComparator(m_pMaxHeapArr[highestIdx]->data, m_pMaxHeapArr[rightIdx]->data))
+			m_fPriorityComparator(*m_pMaxHeapArr[highestIdx]->pData->pObj, *m_pMaxHeapArr[rightIdx]->pData->pObj))
 		{
 			highestIdx = rightIdx;
 		}
@@ -283,8 +283,9 @@ inline void PriorityQueue<T>::heapifyMax(int rootIdx)
 			break;
 		}
 
-		// highestIdx와 rootIdx의 노드 포인터를 스왑하고 rootIdx를 highestIdx로 설정
+		// highestIdx와 rootIdx의 노드 포인터, 인덱스 정보를 스왑하고 rootIdx를 highestIdx로 설정
 		std::swap(m_pMaxHeapArr[highestIdx], m_pMaxHeapArr[rootIdx]);
+		std::swap(m_pMaxHeapArr[highestIdx]->pData->maxHeapIdx, m_pMaxHeapArr[rootIdx]->pData->maxHeapIdx);
 		rootIdx = highestIdx;
 	}
 }
@@ -300,14 +301,14 @@ inline void PriorityQueue<T>::heapifyMin(int rootIdx)
 		const int rightIdx = getRightIdx(rootIdx);
 
 		// 왼쪽 자식 노드의 우선순위가 낮으면 lowestIdx를 leftIdx로 설정
-		if (m_fPriorityComparator(m_pMinHeapArr[leftIdx]->data, m_pMinHeapArr[lowestIdx]->data))
+		if (m_fPriorityComparator(*m_pMinHeapArr[leftIdx]->pData->pObj, *m_pMinHeapArr[lowestIdx]->pData->pObj))
 		{
 			lowestIdx = leftIdx;
 		}
 
 		// 오른쪽 자식 노드가 lowestIdx 노드보다 우선순위가 낮으면 lowestIdx를 rightIdx로 설정
 		if ((rightIdx < m_heapSize) &&
-			m_fPriorityComparator(m_pMinHeapArr[rightIdx]->data, m_pMinHeapArr[lowestIdx]->data))
+			m_fPriorityComparator(*m_pMinHeapArr[rightIdx]->pData->pObj, *m_pMinHeapArr[lowestIdx]->pData->pObj))
 		{
 			lowestIdx = rightIdx;
 		}
@@ -318,8 +319,9 @@ inline void PriorityQueue<T>::heapifyMin(int rootIdx)
 			break;
 		}
 
-		// lowestIdx와 rootIdx의 노드 포인터를 스왑하고 rootIdx를 lowestIdx로 설정
+		// lowestIdx와 rootIdx의 노드 포인터, 인덱스 정보를 스왑하고 rootIdx를 lowestIdx로 설정
 		std::swap(m_pMinHeapArr[lowestIdx], m_pMinHeapArr[rootIdx]);
+		std::swap(m_pMinHeapArr[lowestIdx]->pData->minHeapIdx, m_pMinHeapArr[rootIdx]->pData->minHeapIdx);
 		rootIdx = lowestIdx;
 	}
 }
