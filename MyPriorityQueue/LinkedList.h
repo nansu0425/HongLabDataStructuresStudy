@@ -11,6 +11,11 @@ struct Node
 	Node<T>*	pPrev = nullptr;
 	Node<T>*	pNext = nullptr;;
 
+	Node(const T& data)
+	{
+		pData = new T(data);
+	}
+
 	Node(T&& data) 
 	{ 
 		pData = new T(std::move(data));
@@ -32,7 +37,8 @@ public:
 	LinkedList() = default;
 	~LinkedList();
 
-	void			append(T&& data);
+	template<typename U>
+	void			append(U&& data);
 	void			remove(const Node<T>* pTarget);
 
 	Node<T>*		getPtrFirst() const { return m_pFirst; }
@@ -53,12 +59,13 @@ inline LinkedList<T>::~LinkedList()
 	}
 
 	assert(isEmpty());
-}
+} 
 
 template<typename T>
-inline void LinkedList<T>::append(T&& data)
+template<typename U>
+inline void LinkedList<T>::append(U&& data)
 {
-	Node<T>* pNode = new Node<T>(std::move(data));
+	Node<T>* pNode = new Node<T>(std::forward<U>(data));
 
 	// 노드가 없는 경우
 	if (isEmpty())
