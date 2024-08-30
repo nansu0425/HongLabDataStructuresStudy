@@ -73,8 +73,6 @@ public:
 	bool		isEmpty() const { return m_pList->isEmpty(); }
 	bool		isFull() const { return (m_arrSize == m_heapSize); }
 
-	static void sort(T* arr, int arrSize, PriorityComparator fPriorityComparator);
-
 private:
 	PriorityQueue() = default;
 
