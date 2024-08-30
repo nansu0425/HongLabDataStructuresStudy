@@ -94,8 +94,6 @@ private:
 	int					m_arrSize = 0;
 	int					m_heapSize = 0;
 	PriorityComparator	m_fPriorityComparator = nullptr;
-	int					m_maxHeapLowestIdx = -1;
-	int					m_minHeapHighestIdx = -1;
 };
 
 template<typename T>
