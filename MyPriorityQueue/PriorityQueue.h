@@ -224,6 +224,77 @@ inline PriorityQueue<T>::~PriorityQueue()
 }
 
 template<typename T>
+inline T PriorityQueue<T>::extract(HeapType heapType)
+{
+	assert((m_heapSize > 0) && (heapType != HeapType::NONE));
+
+	T obj = T();
+
+	if (heapType == HeapType::MAX)
+	{
+		obj = getHighestObj();
+		PtrNode pDel = m_pMaxHeapArr[0];
+
+		// 최대 힙의 마지막 노드 값을 루트 노드로 이동
+		m_pMaxHeapArr[0] = m_pMaxHeapArr[m_heapSize - 1];
+
+		// 최소 힙의 마지막 노드 값을 연결 리스트의 삭제될 노드를 가리키고 있는 힙의 노드로 이동
+		const int delMinHeapIdx = pDel->pData->minHeapIdx;
+		m_pMinHeapArr[delMinHeapIdx] = m_pMinHeapArr[m_heapSize - 1];
+
+		// 힙에서 마지막 노드를 제외시킨다
+		--m_heapSize;
+		m_pMaxHeapArr[m_heapSize] = nullptr;
+		m_pMinHeapArr[m_heapSize] = nullptr;
+
+		// 연결 리스트에서 노드를 삭제한다
+		m_pList->remove(pDel);
+		
+		// 최대 힙 배열을 힙 구조로 재배열
+		heapifyMax(0);
+
+		// 최소 힙에서 제외된 마지막 노드가 연결 리스트에서 삭제된 노드를 가리키고 있지 않았다면
+		// 삭제된 노드를 가리키던 최소 힙 노드의 변경된 포인터를 힙 구조에 맞도록 올린다
+		if (delMinHeapIdx < m_heapSize)
+		{
+			movePtrNodeUpwardMin(delMinHeapIdx);
+		}
+	}
+	else if (heapType == HeapType::MIN)
+	{
+		obj = getLowestObj();
+		PtrNode pDel = m_pMinHeapArr[0];
+
+		// 최소 힙의 마지막 노드 값을 루트 노드로 이동
+		m_pMinHeapArr[0] = m_pMinHeapArr[m_heapSize - 1];
+
+		// 최대 힙의 마지막 노드 값을 연결 리스트의 삭제될 노드를 가리키고 있는 힙의 노드로 이동
+		const int delMaxHeapIdx = pDel->pData->maxHeapIdx;
+		m_pMaxHeapArr[delMaxHeapIdx] = m_pMaxHeapArr[m_heapSize - 1];
+
+		// 힙에서 마지막 노드를 제외시킨다
+		--m_heapSize;
+		m_pMinHeapArr[m_heapSize] = nullptr;
+		m_pMaxHeapArr[m_heapSize] = nullptr;
+
+		// 연결 리스트에서 노드를 삭제한다
+		m_pList->remove(pDel);
+
+		// 최소 힙 배열을 힙 구조로 재배열
+		heapifyMin(0);
+
+		// 최대 힙에서 제외된 마지막 노드가 연결 리스트에서 삭제된 노드를 가리키고 있지 않았다면
+		// 삭제된 노드를 가리키던 최대 힙 노드의 변경된 포인터를 힙 구조에 맞도록 올린다
+		if (delMaxHeapIdx < m_heapSize)
+		{
+			movePtrNodeUpwardMax(delMaxHeapIdx);
+		}
+	}
+
+	return obj;
+}
+
+template<typename T>
 template<typename U>
 inline void PriorityQueue<T>::insert(U&& obj)
 {
