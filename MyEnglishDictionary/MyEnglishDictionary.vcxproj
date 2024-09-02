@@ -26,6 +26,7 @@
     <None Include=".editorconfig" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="BinarySearchTree.h" />
     <ClInclude Include="String.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

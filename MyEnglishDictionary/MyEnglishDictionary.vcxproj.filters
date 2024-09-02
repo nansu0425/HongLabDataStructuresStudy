@@ -9,5 +9,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="String.h" />
+    <ClInclude Include="BinarySearchTree.h" />
   </ItemGroup>
 </Project>
