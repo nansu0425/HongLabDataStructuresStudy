@@ -129,6 +129,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MyHeap", "MyHeap\MyHeap.vcx
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MyPriorityQueue", "MyPriorityQueue\MyPriorityQueue.vcxproj", "{4AAF0F09-52CC-4639-A269-9D6087BEF4A5}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MyEnglishDictionary", "MyEnglishDictionary\MyEnglishDictionary.vcxproj", "{E7FC29B6-2757-42A3-8F7A-809D8CE7E3BD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -545,6 +547,14 @@ Global
 		{4AAF0F09-52CC-4639-A269-9D6087BEF4A5}.Release|x64.Build.0 = Release|x64
 		{4AAF0F09-52CC-4639-A269-9D6087BEF4A5}.Release|x86.ActiveCfg = Release|Win32
 		{4AAF0F09-52CC-4639-A269-9D6087BEF4A5}.Release|x86.Build.0 = Release|Win32
+		{E7FC29B6-2757-42A3-8F7A-809D8CE7E3BD}.Debug|x64.ActiveCfg = Debug|x64
+		{E7FC29B6-2757-42A3-8F7A-809D8CE7E3BD}.Debug|x64.Build.0 = Debug|x64
+		{E7FC29B6-2757-42A3-8F7A-809D8CE7E3BD}.Debug|x86.ActiveCfg = Debug|Win32
+		{E7FC29B6-2757-42A3-8F7A-809D8CE7E3BD}.Debug|x86.Build.0 = Debug|Win32
+		{E7FC29B6-2757-42A3-8F7A-809D8CE7E3BD}.Release|x64.ActiveCfg = Release|x64
+		{E7FC29B6-2757-42A3-8F7A-809D8CE7E3BD}.Release|x64.Build.0 = Release|x64
+		{E7FC29B6-2757-42A3-8F7A-809D8CE7E3BD}.Release|x86.ActiveCfg = Release|Win32
+		{E7FC29B6-2757-42A3-8F7A-809D8CE7E3BD}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -601,6 +611,7 @@ Global
 		{AEB2AA9E-5EE4-4235-9A69-CC3F306FEB81} = {76C4FB60-16FD-4EE3-979F-F9193F420B61}
 		{32CF704B-8F4A-4B66-8D8C-22C529CB9FB3} = {33CBBF0C-9918-4F13-BD85-39380AE05225}
 		{4AAF0F09-52CC-4639-A269-9D6087BEF4A5} = {33CBBF0C-9918-4F13-BD85-39380AE05225}
+		{E7FC29B6-2757-42A3-8F7A-809D8CE7E3BD} = {0FBC91D3-8766-4027-B413-521A46A41B7E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {3AB1158A-C979-4ED3-B733-0E3D7B4FC727}
