@@ -77,7 +77,23 @@ public:
 
 	Item* IterGet(const K& key)
 	{
-		// TODO:
+		Node* pCur = root_;
+
+		while (root_ != nullptr)
+		{
+			if (key < pCur->item.key)
+			{
+				pCur = pCur->left;
+			}
+			else if (key > pCur->item.key)
+			{
+				pCur = pCur->right;
+			}
+			else
+			{
+				return &pCur->item;
+			}
+		}
 
 		return nullptr; // No matching
 	}
@@ -93,14 +109,60 @@ public:
 	{
 		// 힌트: RecurGet()
 
-		// TODO:
+		if (node == nullptr)
+		{
+			node = new Node{ item, nullptr, nullptr };
+		}
+		else
+		{
+			if (item.key < node->item.key)
+			{
+				node->left = Insert(node->left, item);
+			}
+			else if (item.key > node->item.key)
+			{
+				node->right = Insert(node->right, item);
+			}
+			else
+			{
+				node->item.value = item.value;
+			}
+		}
 
 		return node;
 	}
 
 	void IterInsert(const Item& item)
 	{
-		// TODO:
+		if (root_ == nullptr)
+		{
+			root_ = new Node{ item, nullptr, nullptr };
+			return;
+		}
+
+		Node* pCur = root_;
+		Node** pTarget = nullptr;
+
+		while (pCur != nullptr)
+		{
+			if (item.key < pCur->item.key)
+			{
+				pTarget = &pCur->left;
+				pCur = pCur->left; 
+			}
+			else if (item.key > pCur->item.key)
+			{
+				pTarget = &pCur->right;
+				pCur = pCur->right;
+			}
+			else
+			{
+				pCur->item.value = item.value;
+				return;
+			}
+		}
+
+		*pTarget = new Node{ item, nullptr, nullptr };
 	}
 
 	Node* MinKeyLeft(Node* node)
@@ -128,7 +190,31 @@ public:
 			node->right = Remove(node->right, key);
 		else
 		{
-			// TODO:
+			Node* pDel = node;
+
+			// 양쪽 자식 노드 모두 있는 경우
+			if ((node->left != nullptr) && (node->right != nullptr))
+			{
+				pDel = MinKeyLeft(node->right);
+				node->item = pDel->item;
+
+				node->right = Remove(node->right, pDel->item.key);
+			}
+			else
+			{
+				// 왼쪽 자식 노드가 없을 때
+				if (node->left == nullptr)
+				{
+					node = node->right;
+				}
+				// 오른쪽 자식 노드가 없을 때
+				else if (node->right == nullptr)
+				{
+					node = node->left;
+				}
+
+				delete pDel;
+			}
 		}
 
 		return node;
