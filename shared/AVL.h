@@ -26,7 +26,7 @@ public:
 		return Base::Height(node); // 헷갈림 방지용
 	}
 
-	int Balance(Node* node)
+	int getHeightDiff(Node* node)
 	{
 		if (node)
 			return Base::Height(node->left) - Base::Height(node->right);
@@ -34,18 +34,60 @@ public:
 			return 0;
 	}
 
+	void balance(Node*& node)
+	{
+		// heightDiff가 0, 1, -1 이면 조절할 필요가 없다고 판단
+		const int heightDiff = getHeightDiff(node);
+
+		// LL -> Right Rotation
+		if (heightDiff > 1 && getHeightDiff(node->left) >= 0)
+		{
+			node = RotateRight(node);
+		}
+
+		// RR -> Left Rotation
+		if (heightDiff < -1 && getHeightDiff(node->right) <= 0)
+		{
+			node = RotateLeft(node);
+		}
+
+		// LR -> Left-Right Rotation
+		if (heightDiff > 1 && getHeightDiff(node->left) < 0)
+		{
+			node->left = RotateLeft(node->left);
+			node = RotateRight(node);
+		}
+
+		// RL -> Right-Left Rotation
+		if (heightDiff < -1 && getHeightDiff(node->right) > 0)
+		{
+			node->right = RotateRight(node->right);
+			node = RotateLeft(node);
+		}
+	}
+
 	Node* RotateLeft(Node* parent)
 	{
-		// TODO:
+		Node* rightChild = parent->right;
 
-		return nullptr;
+		assert(rightChild != nullptr);
+
+		parent->right = rightChild->left;
+		rightChild->left = parent;
+
+		return rightChild;
 	}
 
 	Node* RotateRight(Node* parent)
 	{
-		// TODO:
+		Node* leftChild = parent->left;
 
-		return nullptr;
+		assert(leftChild != nullptr);
+
+		parent->left = leftChild->right;
+		leftChild->right = parent;
+
+		return leftChild;
 	}
 
 	void Insert(const Item& item)
@@ -70,29 +112,8 @@ public:
 			return node;
 		}
 
-		int balance = Balance(node);
-
-		// balance가 0, 1, -1 이면 조절할 필요가 없다고 판단
-
-		// LL -> Right Rotation
-		//if (balance > 1 && Balance(node->left) >= 0)
-		//	TODO:
-
-		// RR -> Left Rotation
-		//if (balance < -1 && Balance(node->right) <= 0)
-		//	TODO:
-
-		// LR -> Left-Right Rotation
-		//if (balance > 1 && Balance(node->left) < 0)
-		//{
-		//	TODO:
-		//}
-
-		// RL -> Right-Left Rotation
-		//if (balance < -1 && Balance(node->right) > 0)
-		//{
-		//	TODO:
-		//}
+		// 균형 잡기
+		balance(node);
 
 		return node;
 	}
@@ -144,10 +165,7 @@ public:
 		//if (node == NULL)	return node; // 불필요 (입력 node의 자식이 하나이거나 없는 경우에는 위에서 return 하기 때문)
 
 		// 균형 잡기
-
-		int balance = Balance(node);
-
-		// TODO:
+		balance(node);
 
 		return node;
 	}
