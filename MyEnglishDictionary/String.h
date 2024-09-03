@@ -1,33 +1,22 @@
 #pragma once
 
-#include <fstream>
-#include <algorithm>
-#include <utility>
-
 const int g_bufSize = 1024;
 
 class String
 {
 public:
-	String()
-	{
-		m_pBuf = new char[g_bufSize];
-		std::fill(m_pBuf, m_pBuf + g_bufSize, 0);
-	}
+	String();
+	String(const String& other);
+	String(String&& other) noexcept;
+	~String();
 
-	String(String&& other) noexcept
-		: m_pBuf(std::exchange(other.m_pBuf, nullptr))
-	{ }
+	String& operator=(const String& rhs);
+	String& operator=(String&& rhs) noexcept;
 
-	~String()
-	{
-		if (m_pBuf != nullptr)
-		{
-			delete m_pBuf;
-		}
-	}
+	char*	getPtrBuf() const { return m_pBuf; }
 
-	char*	getPtrBuf() { return m_pBuf; }
+private:
+	void	swap(String& other);
 
 private:
 	char*		m_pBuf = nullptr;
