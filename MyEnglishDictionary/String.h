@@ -1,5 +1,7 @@
 #pragma once
 
+#include <iostream>
+
 const int g_bufSize = 1024;
 
 class String
@@ -25,3 +27,5 @@ private:
 	char*	m_pBuf = nullptr;
 	int		m_strLen = -1;
 };
+
+std::ostream& operator<<(std::ostream& os, const String& str);

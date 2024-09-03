@@ -92,3 +92,10 @@ int String::getStrLen(const char* pStr)
 
 	return strLen;
 }
+
+std::ostream& operator<<(std::ostream& os, const String& str)
+{
+	os << str.getPtrBuf();
+
+	return os;
+}
