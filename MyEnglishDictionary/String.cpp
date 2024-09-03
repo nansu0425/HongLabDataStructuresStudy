@@ -1,4 +1,4 @@
-#include "String.h"
+﻿#include "String.h"
 
 #include <utility>
 #include <algorithm>
@@ -56,7 +56,7 @@ String& String::operator=(String&& rhs) noexcept
 	return *this;
 }
 
-bool String::operator<(const String& rhs)
+bool String::operator<(const String& rhs) const
 {
 	int strIdx = 0;
 

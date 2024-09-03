@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include <iostream>
 
@@ -15,7 +15,7 @@ public:
 
 	String&		operator=(const String& rhs);
 	String&		operator=(String&& rhs) noexcept;
-	bool		operator<(const String& rhs);
+	bool		operator<(const String& rhs) const;
 
 	const char*	getPtrBuf() const { return m_pBuf; }
 
