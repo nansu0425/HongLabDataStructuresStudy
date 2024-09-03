@@ -8,16 +8,19 @@ public:
 	String();
 	String(const String& other);
 	String(String&& other) noexcept;
+	String(const char* pStr);
 	~String();
 
-	String& operator=(const String& rhs);
-	String& operator=(String&& rhs) noexcept;
+	String&		operator=(const String& rhs);
+	String&		operator=(String&& rhs) noexcept;
 
-	char*	getPtrBuf() const { return m_pBuf; }
-
-private:
-	void	swap(String& other);
+	const char*	getPtrBuf() const { return m_pBuf; }
 
 private:
-	char*		m_pBuf = nullptr;
+	void	swap(String& other) noexcept;
+	int		getStrLen(const char* pStr);
+
+private:
+	char*	m_pBuf = nullptr;
+	int		m_strLen = -1;
 };
