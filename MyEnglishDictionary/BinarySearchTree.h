@@ -3,26 +3,13 @@
 #include <utility>
 
 template<typename Key, typename Value>
-struct Node
+class Node
 {
 	Key		key;
 	Value	value;
 	int		height = 0;
 	Node*	pLeft = nullptr;
 	Node*	pRight = nullptr;
-
-	Node() = default;
-	Node(Node&& other) = default;
-
-	Node(const Key& key, const Value& value)
-		: key(key)
-		, value(value)
-	{ }
-
-	Node(Key&& key, Value&& value) noexcept
-		: key(std::move(key))
-		, value(std::move(value))
-	{ }
 };
 
 template<typename Key, typename Value> 
@@ -33,14 +20,13 @@ class BinarySearchTree
 public:
 	~BinarySearchTree();
 
-	template<typename Node>
-	void	insert(Node&& node);
+	void	insert(BstNode node);
 	void	remove(const Key& key);
 	
-	const BstNode*	getPtrNode const (const Key& key);
+	const BstNode*	getPtrNode(const Key& key) const;
 
 private:
-	void	deleteAllNodes(BstNode* pRoot);
+	void	clear(BstNode* pRoot);
 
 private:
 	BstNode*	m_pRoot = nullptr;
