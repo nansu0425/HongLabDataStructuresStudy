@@ -13,6 +13,7 @@ public:
 
 	String&		operator=(const String& rhs);
 	String&		operator=(String&& rhs) noexcept;
+	bool		operator<(const String& rhs);
 
 	const char*	getPtrBuf() const { return m_pBuf; }
 

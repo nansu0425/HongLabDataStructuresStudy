@@ -56,6 +56,25 @@ String& String::operator=(String&& rhs) noexcept
 	return *this;
 }
 
+bool String::operator<(const String& rhs)
+{
+	int strIdx = 0;
+
+	while ((m_pBuf[strIdx] != '\0') && (m_pBuf[strIdx] == rhs.m_pBuf[strIdx]))
+	{
+		++strIdx;
+	}
+
+	if (m_pBuf[strIdx] < rhs.m_pBuf[strIdx])
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
 void String::swap(String& other) noexcept
 {
 	std::swap(m_pBuf, other.m_pBuf);
