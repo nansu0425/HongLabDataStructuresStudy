@@ -40,11 +40,13 @@ public:
 
 private:
 	void		clear(Node* pRoot);
-	Node*		insert(Node* pTarget, Pair pair);
+	Node*		insert(Node* pRoot, Pair pair);
 	Node*		balance(Node* pRoot);
 	Node*		rotateLeft(Node* pRoot);
 	Node*		rotateRight(Node* pRoot);
 	int			getHeightDiff(Node* pRoot) const;
+	Node*		remove(Node* pRoot, const K& key);
+	Node*		getPtrMinNode(Node* pRoot);
 
 private:
 	Node*		m_pRoot = nullptr;
@@ -78,6 +80,17 @@ inline void BinarySearchTree<K, V>::insert(Pair pair)
 }
 
 template<typename K, typename V>
+inline void BinarySearchTree<K, V>::remove(const K& key)
+{
+	if (m_pRoot == nullptr)
+	{
+		return;
+	}
+
+	m_pRoot = remove(m_pRoot, key);
+}
+
+template<typename K, typename V>
 inline std::ostream& BinarySearchTree<K, V>::print(std::ostream& os, const Node* pRoot) const
 {
 	if (pRoot == nullptr)
@@ -107,36 +120,36 @@ inline void BinarySearchTree<K, V>::clear(Node* pRoot)
 }
 
 template<typename K, typename V>
-inline Node<K, V>* BinarySearchTree<K, V>::insert(Node* pTarget, Pair pair)
+inline Node<K, V>* BinarySearchTree<K, V>::insert(Node* pRoot, Pair pair)
 {
-	if (pTarget == nullptr)
+	if (pRoot == nullptr)
 	{
 		return new Node{ std::move(pair), 0, nullptr, nullptr };
 	}
 
 	// 삽입하려는 key가 클 때
-	if (pTarget->pair.key < pair.key)
+	if (pRoot->pair.key < pair.key)
 	{
-		pTarget->pRight = insert(pTarget->pRight, std::move(pair));
+		pRoot->pRight = insert(pRoot->pRight, std::move(pair));
 	}
 	// 삽입하려는 key가 작을 때
-	else if (pair.key < pTarget->pair.key)
+	else if (pair.key < pRoot->pair.key)
 	{
-		pTarget->pLeft = insert(pTarget->pLeft, std::move(pair));
+		pRoot->pLeft = insert(pRoot->pLeft, std::move(pair));
 	}
 	// 삽입하려는 key가 같을 때
 	else
 	{
-		pTarget->pair.value = std::move(pair.value);
+		pRoot->pair.value = std::move(pair.value);
 	}
 
 	// 균형 맞추기
-	pTarget = balance(pTarget);
+	pRoot = balance(pRoot);
 
 	// 높이 설정
-	pTarget->setHeight();
+	pRoot->setHeight();
 
-	return pTarget;
+	return pRoot;
 }
 
 template<typename K, typename V>
@@ -202,6 +215,86 @@ inline int BinarySearchTree<K, V>::getHeightDiff(Node* pRoot) const
 	const int rightHeight = (pRoot->pRight == nullptr) ? -1 : pRoot->pRight->height;
 
 	return leftHeight - rightHeight;
+}
+
+template<typename K, typename V>
+inline Node<K, V>* BinarySearchTree<K, V>::remove(Node* pRoot, const K& key)
+{
+	// key가 트리에 없는 경우
+	if (pRoot == nullptr)
+	{
+		return pRoot;
+	}
+
+	// 루트 노드 key보다 삭제할 key가 큰 경우
+	if (pRoot->pair.key < key)
+	{
+		pRoot->pRight = remove(pRoot->pRight, key);
+	}
+	// 삭제할 key보다 루트 노드 key가 더 큰 경우
+	else if (key < pRoot->pair.key)
+	{
+		pRoot->pLeft = remove(pRoot->pLeft, key);
+	}
+	// 삭제할 key와 루트 노드 key가 같은 경우
+	else
+	{
+		Node* pDel = pRoot;
+
+		// 자식 노드가 없는 경우
+		if ((pRoot->pLeft == nullptr) && (pRoot->pRight == nullptr))
+		{
+			pRoot = nullptr;
+		}
+		// 오른쪽 자식 노드만 있는 경우
+		else if (pRoot->pLeft == nullptr)
+		{	
+			pRoot = pRoot->pRight;
+		}
+		// 왼쪽 자식 노드만 있는 경우
+		else if (pRoot->pRight == nullptr)
+		{
+			pRoot = pRoot->pLeft;
+		}
+		// 양쪽 자식 노드 모두 있는 경우
+		else
+		{
+			Node* pMin = getPtrMinNode(pRoot->pRight);
+			std::swap(pRoot->pair, pMin->pair);
+			pRoot->pRight = remove(pRoot->pRight, pMin->pair.key);
+
+			pDel = nullptr;
+		}
+
+		if (pDel != nullptr)
+		{
+			delete pDel;
+		}
+	}
+
+	if (pRoot != nullptr)
+	{
+		// 트리 균형 맞추기
+		balance(pRoot);
+
+		// 높이 설정
+		pRoot->setHeight();
+	}
+
+	return pRoot;
+}
+
+template<typename K, typename V>
+inline Node<K, V>* BinarySearchTree<K, V>::getPtrMinNode(Node* pRoot)
+{
+	Node* pMin = pRoot;
+
+	while (pMin->pLeft != nullptr)
+	{
+		pMin = pMin->pLeft;
+	}
+
+	return pMin;
 }
 
 template<typename K, typename V>
