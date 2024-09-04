@@ -31,7 +31,7 @@ class BinarySearchTree
 public:
 	~BinarySearchTree();
 
-	void		insert(const Pair& pair);
+	void		insert(Pair pair);
 	void		remove(const K& key);
 	
 	const Node*		getPtrNode(const K& key) const;
@@ -40,7 +40,7 @@ public:
 
 private:
 	void		clear(Node* pRoot);
-	Node*		insert(Node* pTarget, const Pair& pair);
+	Node*		insert(Node* pTarget, Pair pair);
 
 private:
 	Node*		m_pRoot = nullptr;
@@ -62,7 +62,7 @@ inline BinarySearchTree<K, V>::~BinarySearchTree()
 }
 
 template<typename K, typename V>
-inline void BinarySearchTree<K, V>::insert(const Pair& pair)
+inline void BinarySearchTree<K, V>::insert(Pair pair)
 {
 	if (m_pRoot == nullptr)
 	{
@@ -70,7 +70,7 @@ inline void BinarySearchTree<K, V>::insert(const Pair& pair)
 		return;
 	}
 
-	insert(m_pRoot, pair);
+	insert(m_pRoot, std::move(pair));
 }
 
 template<typename K, typename V>
@@ -103,7 +103,7 @@ inline void BinarySearchTree<K, V>::clear(Node* pRoot)
 }
 
 template<typename K, typename V>
-inline Node<K, V>* BinarySearchTree<K, V>::insert(Node* pTarget, const Pair& pair)
+inline Node<K, V>* BinarySearchTree<K, V>::insert(Node* pTarget, Pair pair)
 {
 	if (pTarget == nullptr)
 	{
@@ -113,12 +113,12 @@ inline Node<K, V>* BinarySearchTree<K, V>::insert(Node* pTarget, const Pair& pai
 	// 삽입하려는 key가 클 때
 	if (pTarget->pair.key < pair.key)
 	{
-		pTarget->pRight = insert(pTarget->pRight, pair);
+		pTarget->pRight = insert(pTarget->pRight, std::move(pair));
 	}
 	// 삽입하려는 key가 작을 때
 	else if (pair.key < pTarget->pair.key)
 	{
-		pTarget->pLeft = insert(pTarget->pLeft, pair);
+		pTarget->pLeft = insert(pTarget->pLeft, std::move(pair));
 	}
 	// 삽입하려는 key가 같을 때
 	else
