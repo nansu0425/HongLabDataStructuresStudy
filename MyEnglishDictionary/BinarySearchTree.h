@@ -41,6 +41,10 @@ public:
 private:
 	void		clear(Node* pRoot);
 	Node*		insert(Node* pTarget, Pair pair);
+	Node*		balance(Node* pRoot);
+	Node*		rotateLeft(Node* pRoot);
+	Node*		rotateRight(Node* pRoot);
+	int			getHeightDiff(Node* pRoot) const;
 
 private:
 	Node*		m_pRoot = nullptr;
@@ -70,7 +74,7 @@ inline void BinarySearchTree<K, V>::insert(Pair pair)
 		return;
 	}
 
-	insert(m_pRoot, std::move(pair));
+	m_pRoot = insert(m_pRoot, std::move(pair));
 }
 
 template<typename K, typename V>
@@ -126,10 +130,78 @@ inline Node<K, V>* BinarySearchTree<K, V>::insert(Node* pTarget, Pair pair)
 		pTarget->pair.value = std::move(pair.value);
 	}
 
+	// 균형 맞추기
+	pTarget = balance(pTarget);
+
 	// 높이 설정
 	pTarget->setHeight();
 
 	return pTarget;
+}
+
+template<typename K, typename V>
+inline Node<K, V>* BinarySearchTree<K, V>::balance(Node* pRoot)
+{
+	// LL
+	if ((getHeightDiff(pRoot) > 1) && (getHeightDiff(pRoot->pLeft) > -1))
+	{
+		return rotateRight(pRoot);
+	}
+
+	// RR
+	if ((getHeightDiff(pRoot) < -1) && (getHeightDiff(pRoot->pRight) < 1))
+	{
+		return rotateLeft(pRoot);
+	}
+
+	// LR
+	if ((getHeightDiff(pRoot) > 1) && (getHeightDiff(pRoot->pLeft) < 0))
+	{
+		pRoot->pLeft = rotateLeft(pRoot->pLeft);
+		return rotateRight(pRoot);
+	}
+
+	// RL
+	if ((getHeightDiff(pRoot) < -1) && (getHeightDiff(pRoot->pRight) > 0))
+	{
+		pRoot->pRight = rotateRight(pRoot->pRight);
+		return rotateLeft(pRoot);
+	}
+
+	return pRoot;
+}
+
+template<typename K, typename V>
+inline Node<K, V>* BinarySearchTree<K, V>::rotateLeft(Node* pRoot)
+{
+	Node* pRight = pRoot->pRight;
+
+	pRoot->pRight = pRight->pLeft;
+	pRight->pLeft = pRoot;
+	--pRoot->height;
+
+	return pRight;
+}
+
+template<typename K, typename V>
+inline Node<K, V>* BinarySearchTree<K, V>::rotateRight(Node* pRoot)
+{
+	Node* pLeft = pRoot->pLeft;
+
+	pRoot->pLeft = pLeft->pRight;
+	pLeft->pRight = pRoot;
+	--pRoot->height;
+
+	return pLeft;
+}
+
+template<typename K, typename V>
+inline int BinarySearchTree<K, V>::getHeightDiff(Node* pRoot) const
+{
+	const int leftHeight = (pRoot->pLeft == nullptr) ? -1 : pRoot->pLeft->height;
+	const int rightHeight = (pRoot->pRight == nullptr) ? -1 : pRoot->pRight->height;
+
+	return leftHeight - rightHeight;
 }
 
 template<typename K, typename V>
