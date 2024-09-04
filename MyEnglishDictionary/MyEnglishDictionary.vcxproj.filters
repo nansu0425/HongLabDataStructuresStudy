@@ -3,6 +3,7 @@
   <ItemGroup>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="String.cpp" />
+    <ClCompile Include="EnglishDictionary.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include=".editorconfig" />
@@ -10,5 +11,6 @@
   <ItemGroup>
     <ClInclude Include="String.h" />
     <ClInclude Include="BinarySearchTree.h" />
+    <ClInclude Include="EnglishDictionary.h" />
   </ItemGroup>
 </Project>
