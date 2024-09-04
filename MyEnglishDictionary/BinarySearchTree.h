@@ -91,6 +91,35 @@ inline void BinarySearchTree<K, V>::remove(const K& key)
 }
 
 template<typename K, typename V>
+inline const Node<K, V>* BinarySearchTree<K, V>::getPtrNode(const K& key) const
+{
+	if (m_pRoot == nullptr)
+	{
+		return nullptr;
+	}
+
+	Node* pCur = m_pRoot;
+
+	while (pCur != nullptr)
+	{
+		if (pCur->pair.key < key)
+		{
+			pCur = pCur->pRight;
+		}
+		else if (key < pCur->pair.key)
+		{
+			pCur = pCur->pLeft;
+		}
+		else
+		{
+			break;
+		}
+	}
+
+	return pCur;
+}
+
+template<typename K, typename V>
 inline std::ostream& BinarySearchTree<K, V>::print(std::ostream& os, const Node* pRoot) const
 {
 	if (pRoot == nullptr)
