@@ -29,16 +29,31 @@ void Print(int* arr, int low, int high, int n)
 int Partition(int arr[], int low, int high, int n)
 {
 	int pivot = arr[size_t(floorf((high - low) / 2.0f)) + low];
-	int i = low - 1;
-	int j = high + 1;
+	int i = low;
+	int j = high;
 
 	while (true)
 	{
-		// TODO:
+		while (arr[i] < pivot)
+		{
+			++i;
+		}
+
+		while (pivot < arr[j])
+		{
+			--j;
+		}
+
+		std::swap(arr[i], arr[j]);
 
 		cout << "pivot=" << pivot << ", i=" << i << ", j=" << j << endl;
 		cout << "         ";
 		Print(arr, low, high, n);
+
+		if (i == j)
+		{
+			return i;
+		}
 	}
 }
 
