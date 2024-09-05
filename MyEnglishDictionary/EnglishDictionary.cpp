@@ -33,3 +33,15 @@ void EnglishDictionary::setWordSearchTree(const char* pFileName)
 
 	file.close();
 }
+
+String EnglishDictionary::search(const String& word)
+{
+	const Node<String, String>* pWord= m_wordSearchTree.getPtrNode(word);
+
+	if (pWord == nullptr)
+	{
+		return String("No result");
+	}
+
+	return pWord->pair.value;
+}
