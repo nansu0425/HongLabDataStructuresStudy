@@ -18,6 +18,7 @@ public:
 	bool		operator<(const String& rhs) const;
 
 	const char*	getPtrBuf() const { return m_pBuf; }
+	char*		getPtrBuf() { return m_pBuf; }
 
 private:
 	void	swap(String& other) noexcept;
