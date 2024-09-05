@@ -17,8 +17,9 @@ public:
 	String&		operator=(String&& rhs) noexcept;
 	bool		operator<(const String& rhs) const;
 
-	const char*	getPtrBuf() const { return m_pBuf; }
-	char*		getPtrBuf() { return m_pBuf; }
+	const char*		getPtrBuf() const { return m_pBuf; }
+	char*			getPtrBuf() { return m_pBuf; }
+	std::istream&	getLine(std::istream& is);
 
 private:
 	void	swap(String& other) noexcept;

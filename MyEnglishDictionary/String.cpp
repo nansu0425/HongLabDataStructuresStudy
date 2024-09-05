@@ -75,6 +75,14 @@ bool String::operator<(const String& rhs) const
 	}
 }
 
+std::istream& String::getLine(std::istream& is)
+{
+	is.getline(m_pBuf, g_bufSize);
+	m_strLen = getStrLen(m_pBuf);
+
+	return is;
+}
+
 void String::swap(String& other) noexcept
 {
 	std::swap(m_pBuf, other.m_pBuf);
