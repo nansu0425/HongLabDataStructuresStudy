@@ -29,7 +29,14 @@ int main()
 			cout << x << " was not found" << endl;
 		else
 		{
-			// TODO: 
+			int startIdx = 0;
+
+			while ((startIdx + 1 < kn) && (keys[startIdx + 1] <= x))
+			{
+				++startIdx;
+			}
+			
+			std::cout << "Index of " << x << ": " << SequentialSearch(arr, indices[startIdx], indices[startIdx + 1], x) << std::endl;
 		}
 	}
 
