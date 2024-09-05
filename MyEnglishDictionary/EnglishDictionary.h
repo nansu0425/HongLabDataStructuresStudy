@@ -6,7 +6,7 @@
 class EnglishDictionary
 {
 public:
-	void	setWordSearchTree(const char* fileName);
+	void	setWordSearchTree(const char* pFileName);
 
 private:
 	BinarySearchTree<String, String>	m_wordSearchTree;
