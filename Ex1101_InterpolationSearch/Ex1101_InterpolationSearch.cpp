@@ -4,24 +4,25 @@ using namespace std;
 
 int rec_count = 0;
 
-int InterpolationSearch(int arr[], int low, int high, int x)
+int InterpolationSearch(int arr[], int lowIdx, int highIdx, int x)
 {
 	rec_count++;
 
-	if (low <= high && x >= arr[low] && x <= arr[high])
+	if (lowIdx <= highIdx && x >= arr[lowIdx] && x <= arr[highIdx])
 	{
-		int pos = (low + high) / 2; // 이진 탐색 (중간)
+		// int targetIdx = (lowIdx + highIdx) / 2; // 이진 탐색 (중간)
 
-		// TODO: int pos = 보간 탐색으로 수정
+		// 보간 탐색
+		int targetIdx = (highIdx - lowIdx) * (x - arr[lowIdx]) / (arr[highIdx] - arr[lowIdx]) + lowIdx;
 
-		if (arr[pos] == x)
-			return pos;
+		if (arr[targetIdx] == x)
+			return targetIdx;
 
-		if (arr[pos] < x)
-			return InterpolationSearch(arr, pos + 1, high, x);
+		if (arr[targetIdx] < x)
+			return InterpolationSearch(arr, targetIdx + 1, highIdx, x);
 
-		if (arr[pos] > x)
-			return InterpolationSearch(arr, low, pos - 1, x);
+		if (arr[targetIdx] > x)
+			return InterpolationSearch(arr, lowIdx, targetIdx - 1, x);
 	}
 
 	return -1;
