@@ -91,17 +91,90 @@ public:
 
 	void DepthFirstTraversal(int v) // v는 인덱스
 	{
-		// TODO:
+		// 방문 처리
+		visited_[v] = true;
+		std::cout << vertices_[v].item << " ";
+
+		Node* pAdjVertex = list_[v];
+
+		// 인접 정점이 존재하면 반복
+		while (pAdjVertex != nullptr)
+		{
+			// 방문한 적 없는 정점이면 dfs
+			if (visited_[pAdjVertex->vertex] == false)
+			{
+				DepthFirstTraversal(pAdjVertex->vertex);
+			}
+
+			pAdjVertex = pAdjVertex->next;
+		}
 	}
 
 	void IterDFT()
 	{
-		// TODO:
+		ResetVisited();
+
+		Stack<int> vertexIndices;
+		vertexIndices.Push(0);
+
+		// 스택에 정점 인덱스가 남아있으면 반복
+		while (vertexIndices.IsEmpty() == false)
+		{
+			// 정점을 꺼낸다
+			const int vertexIdx = vertexIndices.Top();
+			vertexIndices.Pop();
+
+			// 방문한 적 있는 정점이면 다음 반복으로
+			if (visited_[vertexIdx] == true)
+			{
+				continue;
+			}
+
+			// 방문 처리
+			visited_[vertexIdx] = true;
+			std::cout << vertices_[vertexIdx].item << " ";
+
+			Node* pAdjVertex = list_[vertexIdx];
+
+			// 모든 인접한 정점을 스택에 넣는다
+			while (pAdjVertex != nullptr)
+			{
+				vertexIndices.Push(pAdjVertex->vertex);
+				pAdjVertex = pAdjVertex->next;
+			}
+		}
 	}
 
 	void BreadthFirstTraversal()
 	{
-		// TODO:
+		ResetVisited();
+
+		Queue<int> vertexIndices;
+		vertexIndices.Enqueue(0);
+		visited_[0] = true;
+
+		// 큐에 정점 인덱스가 남아있으면 반복
+		while (vertexIndices.IsEmpty() == false)
+		{
+			// 정점 인덱스를 꺼낸다
+			const int vertexIdx = vertexIndices.Front();
+			vertexIndices.Dequeue();
+
+			std::cout << vertices_[vertexIdx].item << " ";
+
+			Node* pAdjVertex = list_[vertexIdx];
+
+			// 방문하지 않은 인접한 정점에 수행 
+			while ((pAdjVertex != nullptr) && 
+				   (visited_[pAdjVertex->vertex] == false))
+			{
+				// 큐에 정점을 넣고 방문 처리
+				vertexIndices.Enqueue(pAdjVertex->vertex);
+				visited_[pAdjVertex->vertex] = true;
+
+				pAdjVertex = pAdjVertex->next;
+			}
+		}
 	}
 
 	void ResetVisited()
@@ -142,6 +215,7 @@ int main()
 	cout << endl;
 
 	g.IterDFT();
+	cout << endl;
 
 	g.BreadthFirstTraversal();
 
