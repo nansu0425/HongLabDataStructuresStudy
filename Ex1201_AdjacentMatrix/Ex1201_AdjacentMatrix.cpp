@@ -68,7 +68,6 @@ public:
 	{
 		assert(u < n_ && v < n_);
 
-		// TODO:
 		matrix_[u][v] = 1;
 	}
 
@@ -82,29 +81,87 @@ public:
 		ResetVisited();
 
 		DepthFirstTraversal(0);
+		// IterDFT();
 
 		cout << endl;
 	}
 
-	void DepthFirstTraversal(int v) // v는 인덱스
+	void DepthFirstTraversal(int vertexIdx) // v는 인덱스
 	{
-		// TODO:
+		// 방문 처리
+		visited_[vertexIdx] = true;
+		std::cout << vertices_[vertexIdx].item << " ";
+
+		// 방문한 적 없는 인접한 정점 dfs
+		for (int adjacentIdx = 0; adjacentIdx < max_vertices_; ++adjacentIdx)
+		{
+			if ((matrix_[vertexIdx][adjacentIdx] == 1) && 
+				(visited_[adjacentIdx] == false))
+			{
+				DepthFirstTraversal(adjacentIdx);
+			}
+		}
 	}
 
 	void IterDFT()
 	{
-		// TODO:
+		Stack<int> vertexIndices;
+		vertexIndices.Push(0);
+
+		// 스택에 정점 인덱스가 남아있으면 반복
+		while (vertexIndices.IsEmpty() == false)
+		{
+			// 스택에서 정점 인덱스 꺼낸다
+			const int vertexIdx = vertexIndices.Top();
+			vertexIndices.Pop();
+
+			// 방문한 적 없는 정점이면
+			if (visited_[vertexIdx] == false)
+			{
+				// 정점 방문 처리
+				visited_[vertexIdx] = true;
+				std::cout << vertices_[vertexIdx].item << " ";
+
+				// 인접한 정점의 인덱스를 스택에 넣는다
+				for (int adjacentIdx = 0; adjacentIdx < max_vertices_; ++adjacentIdx)
+				{
+					if (matrix_[vertexIdx][adjacentIdx] == 1)
+					{
+						vertexIndices.Push(adjacentIdx);
+					}
+				}
+			}
+		}
 	}
 
 	void BreadthFirstTraversal()
 	{
-		int v = 0; // 0번에서 시작
-
-		Queue<int> q;
-
 		ResetVisited();
 
-		// TODO:
+		Queue<int> vertexIndices;
+		vertexIndices.Enqueue(0);
+		visited_[0] = true;
+
+		// 큐에 정점 인덱스가 남아있으면 반복
+		while (vertexIndices.IsEmpty() == false)
+		{
+			// 큐에서 정점 인덱스를 꺼낸다
+			const int visitedIndex = vertexIndices.Front();
+			vertexIndices.Dequeue();
+
+			std::cout << vertices_[visitedIndex].item << " ";
+
+			// 방문한 적 없는 정점 인덱스를 큐에 넣는다
+			for (int adjacentIdx = 0; adjacentIdx < max_vertices_; ++adjacentIdx)
+			{
+				if ((matrix_[visitedIndex][adjacentIdx] == 1) &&
+					(visited_[adjacentIdx] == false))
+				{
+					vertexIndices.Enqueue(adjacentIdx);
+					visited_[adjacentIdx] = true;
+				}
+			}
+		}
 	}
 
 	void ResetVisited()
@@ -132,7 +189,7 @@ int main()
 	for (int i = 0; i < g.Capacity(); i++)
 		g.InsertVertex(i);
 
-	/*
+	
 	// 위키피디아 버전
 	g.InsertEdge(0, 2);	g.InsertEdge(2, 0);
 	g.InsertEdge(0, 1);	g.InsertEdge(1, 0);
@@ -144,17 +201,17 @@ int main()
 	g.InsertEdge(5, 6);	g.InsertEdge(6, 5);
 	g.InsertEdge(3, 0);	g.InsertEdge(0, 3);
 	g.InsertEdge(4, 0);	g.InsertEdge(0, 4);
-	*/
+	
 
 	// 강의 영상 버전
-	g.InsertEdge(0, 2);	g.InsertEdge(2, 0);
+	/*g.InsertEdge(0, 2);	g.InsertEdge(2, 0);
 	g.InsertEdge(0, 1);	g.InsertEdge(1, 0);
 	g.InsertEdge(1, 4);	g.InsertEdge(4, 1);
 	g.InsertEdge(1, 3);	g.InsertEdge(3, 1);
 	g.InsertEdge(2, 4);	g.InsertEdge(4, 2);
 	g.InsertEdge(3, 6);	g.InsertEdge(6, 3);
 	g.InsertEdge(4, 6);	g.InsertEdge(6, 4);
-	g.InsertEdge(5, 6);	g.InsertEdge(6, 5);
+	g.InsertEdge(5, 6);	g.InsertEdge(6, 5);*/
 
 	g.PrintMatrix();
 
